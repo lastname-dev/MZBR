@@ -38,3 +38,4 @@ out/
 
 ### Configuration ###
 /src/main/resources/application.yml
+/localstack/docker-compose.yml
