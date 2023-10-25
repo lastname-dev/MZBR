@@ -22,21 +22,21 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@ExceptionHandler(BadRequestException.class)
 	protected ResponseEntity<ErrorResponse> handleConflict(BadRequestException badRequestException) {
-		log.error("BadRequestException", badRequestException);
+		log.error("BadRequestException : {}", badRequestException.getMessage());
 		return handleExceptionInternal(badRequestException.getErrorCode());
 	}
 
 	@ExceptionHandler(AuthException.class)
 	protected ResponseEntity<ErrorResponse> handleConflict(AuthException authException) {
-		log.error("AuthException", authException);
+		log.error("AuthException : {}", authException.getMessage());
 		return handleExceptionInternal(authException.getErrorCode());
 	}
 
 	@ExceptionHandler(Exception.class)
 	protected ResponseEntity<ErrorResponse> handleException(Exception exception) {
-		log.error("Exception", exception);
+		log.error("Exception : {}", exception.getMessage());
 		ErrorResponse errorResponse = ErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR,
-			exception.getMessage());
+			"서버 오류가 발생하였습니다.");
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
 	}
 
