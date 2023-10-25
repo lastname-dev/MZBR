@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-	@Value("${uri.permits}")
+	@Value(value = "${uri.permits}")
 	private final List<String> permitUrl;
 
 	@Bean
