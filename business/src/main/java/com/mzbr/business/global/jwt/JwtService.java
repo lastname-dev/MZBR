@@ -97,4 +97,19 @@ public class JwtService {
 		response.addHeader(REFRESH_HEADER, PREFIX + refreshToken);
 	}
 
+	public void checkRefreshToken(HttpServletResponse response, String refreshToken) {
+		String id = (String)redisTemplate.opsForValue().get(refreshToken);
+		if (id == null) {
+			throw new AuthException(ErrorCode.REFRESH_TOKEN_INVALID);
+		}
+		String newAccessToken = createAccessToken(Integer.parseInt(id));
+		String newRefreshToken = createRefreshToken();
+
+		redisTemplate.opsForValue().set(newRefreshToken, id, REFRESH_EXPIRATION_TIME, TimeUnit.MILLISECONDS);
+		sendBothToken(response, newAccessToken, newRefreshToken);
+	}
+
+	public int extractId(String accessToken) {
+		return JWT.decode(accessToken).getClaim("id").asInt();
+	}
 }
