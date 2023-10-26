@@ -62,4 +62,16 @@ public class JwtService {
 			.sign(Algorithm.HMAC512(secretKey));
 	}
 
+	public Optional<String> extractAccessToken(HttpServletRequest request) {
+		return Optional.ofNullable(request.getHeader(ACCESS_HEADER))
+			.filter(token -> token.startsWith(PREFIX))
+			.map(token -> token.replace(PREFIX, ""));
+	}
+
+	public Optional<String> extractRefreshToken(HttpServletRequest request) {
+		return Optional.ofNullable(request.getHeader(REFRESH_HEADER))
+			.filter(token -> token.startsWith(PREFIX))
+			.map(token -> token.replace(PREFIX, ""));
+	}
+
 }
