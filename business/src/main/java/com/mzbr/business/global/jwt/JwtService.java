@@ -1,20 +1,33 @@
 package com.mzbr.business.global.jwt;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
+import org.springframework.security.core.authority.mapping.NullAuthoritiesMapper;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.mzbr.business.global.exception.ErrorCode;
 import com.mzbr.business.global.exception.custom.AuthException;
+import com.mzbr.business.global.util.PasswordUtil;
+import com.mzbr.business.member.entity.Member;
+import com.mzbr.business.member.repository.MemberRepository;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +59,8 @@ public class JwtService {
 	private static final String EXPIRED_TOKEN_SUBJECT = "ExpiredToken";
 
 	private final RedisTemplate redisTemplate;
+	private final MemberRepository memberRepository;
+	private GrantedAuthoritiesMapper authoritiesMapper = new NullAuthoritiesMapper();
 
 	public String createAccessToken(int id) {
 		return JWT.create()
@@ -72,6 +87,11 @@ public class JwtService {
 		return Optional.ofNullable(request.getHeader(REFRESH_HEADER))
 			.filter(token -> token.startsWith(PREFIX))
 			.map(token -> token.replace(PREFIX, ""));
+	}
+
+	public Optional<Integer> extractId(String accessToken) {
+
+		return Optional.ofNullable(JWT.decode(accessToken).getClaim("id").asInt());
 	}
 
 	public boolean isTokenValid(String token) {
@@ -109,7 +129,29 @@ public class JwtService {
 		sendBothToken(response, newAccessToken, newRefreshToken);
 	}
 
-	public int extractId(String accessToken) {
-		return JWT.decode(accessToken).getClaim("id").asInt();
+	public void checkAccessToken(HttpServletRequest request, HttpServletResponse response,
+		FilterChain filterChain) throws
+		ServletException,
+		IOException {
+		extractAccessToken(request).filter(this::isTokenValid)
+			.flatMap(accessToken -> extractId(accessToken)
+				.flatMap(memberRepository::findById))
+			.ifPresent(this::saveAuthentication);
+		filterChain.doFilter(request, response);
 	}
+
+	public void saveAuthentication(Member member) {
+		UserDetails userDetails = User.builder()
+			.username(String.valueOf(member.getId()))
+			.password(PasswordUtil.generateRandomPassword())
+			.roles(member.getRole().name())
+			.build();
+
+		Authentication authentication =
+			new UsernamePasswordAuthenticationToken(userDetails, null,
+				authoritiesMapper.mapAuthorities(userDetails.getAuthorities()));
+
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+	}
+
 }
