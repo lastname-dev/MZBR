@@ -74,4 +74,27 @@ public class JwtService {
 			.map(token -> token.replace(PREFIX, ""));
 	}
 
+	public boolean isTokenValid(String token) {
+		try {
+			JWT.require(Algorithm.HMAC512(secretKey)).build().verify(token);
+			return true;
+		} catch (Exception e) {
+			log.error("유효하지 않은 토큰입니다. {}", e.getMessage());
+			return false;
+		}
+	}
+
+	public void sendBothToken(HttpServletResponse response, String accessToken, String refreshToken) {
+		sendAccessToken(response, accessToken);
+		sendRefreshToken(response, refreshToken);
+	}
+
+	public void sendAccessToken(HttpServletResponse response, String accessToken) {
+		response.addHeader(ACCESS_HEADER, PREFIX + accessToken);
+	}
+
+	public void sendRefreshToken(HttpServletResponse response, String refreshToken) {
+		response.addHeader(REFRESH_HEADER, PREFIX + refreshToken);
+	}
+
 }
