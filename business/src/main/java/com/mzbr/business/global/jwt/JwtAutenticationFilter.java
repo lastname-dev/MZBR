@@ -42,8 +42,9 @@ public class JwtAutenticationFilter extends OncePerRequestFilter {
 			.filter(jwtService::isTokenValid)
 			.orElse(null);
 
-		if (refreshToken != null)
+		if (refreshToken != null) {
 			jwtService.checkRefreshToken(response, refreshToken);
+		}
 
 		if (refreshToken == null) {
 			jwtService.checkAccessToken(request, response, filterChain);

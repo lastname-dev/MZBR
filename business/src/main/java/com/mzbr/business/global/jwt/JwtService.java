@@ -99,9 +99,15 @@ public class JwtService {
 			JWT.require(Algorithm.HMAC512(secretKey)).build().verify(token);
 			return true;
 		} catch (Exception e) {
-			log.error("유효하지 않은 토큰입니다. {}", e.getMessage());
 			return false;
 		}
+	}
+
+	public boolean isTokenBlacklist(String token) {
+		if (redisTemplate.opsForValue().get(token) != null) {
+			throw new AuthException(ErrorCode.ACCESS_TOKEN_BLACKLIST);
+		}
+		return false;
 	}
 
 	public void sendBothToken(HttpServletResponse response, String accessToken, String refreshToken) {
@@ -133,10 +139,16 @@ public class JwtService {
 		FilterChain filterChain) throws
 		ServletException,
 		IOException {
-		extractAccessToken(request).filter(this::isTokenValid)
-			.flatMap(accessToken -> extractId(accessToken)
-				.flatMap(memberRepository::findById))
-			.ifPresent(this::saveAuthentication);
+		extractAccessToken(request)
+			.ifPresent(accessToken -> {
+				if (isTokenValid(accessToken) && !isTokenBlacklist(accessToken)) {
+					extractId(accessToken)
+						.flatMap(memberRepository::findById)
+						.ifPresent(this::saveAuthentication);
+				} else {
+					throw new AuthException(ErrorCode.ACCESS_TOKEN_INVALID);
+				}
+			});
 		filterChain.doFilter(request, response);
 	}
 
