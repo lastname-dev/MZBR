@@ -13,7 +13,8 @@ public enum ErrorCode {
 	ACCESS_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "J-003", "Access Token 이 만료되었습니다."),
 	ACCESS_TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "J-004", "유효하지 않은 Access Token 입니다."),
 	ACCESS_TOKEN_BLACKLIST(HttpStatus.UNAUTHORIZED, "J-005", "블랙리스트로 등록된 Access Token 입니다."),
-	JWT_TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "J-006", "유효하지 않은 JWT 입니다."),
+	ACCESS_TOKEN_NOT_EXIST(HttpStatus.UNAUTHORIZED, "J-006", "Access Token 이 존재하지 않습니다."),
+	JWT_TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "J-007", "유효하지 않은 JWT 입니다."),
 
 	// User
 	USER_NOT_FOUND(HttpStatus.NOT_FOUND, "U-001", "존재하지 않는 회원입니다."),

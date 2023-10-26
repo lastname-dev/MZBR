@@ -22,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtAutenticationFilter extends OncePerRequestFilter {
 
 	private final JwtService jwtService;
-	private final MemberRepository memberRepository;
 	private final AntPathMatcher pathMatcher = new AntPathMatcher();
 	@Value("${uri.permits}")
 	private final List<String> permitUrl;

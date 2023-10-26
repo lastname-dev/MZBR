@@ -90,7 +90,6 @@ public class JwtService {
 	}
 
 	public Optional<Integer> extractId(String accessToken) {
-
 		return Optional.ofNullable(JWT.decode(accessToken).getClaim("id").asInt());
 	}
 
@@ -104,7 +103,7 @@ public class JwtService {
 	}
 
 	public boolean isTokenBlacklist(String token) {
-		if (redisTemplate.opsForValue().get(token) != null) {
+		if (redisTemplate.opsForValue().get(token) == null) {
 			throw new AuthException(ErrorCode.ACCESS_TOKEN_BLACKLIST);
 		}
 		return false;
@@ -140,14 +139,16 @@ public class JwtService {
 		ServletException,
 		IOException {
 		extractAccessToken(request)
-			.ifPresent(accessToken -> {
-				if (isTokenValid(accessToken) && !isTokenBlacklist(accessToken)) {
+			.ifPresentOrElse(accessToken -> {
+				if (!isTokenBlacklist(accessToken) && isTokenValid(accessToken)) {
 					extractId(accessToken)
 						.flatMap(memberRepository::findById)
 						.ifPresent(this::saveAuthentication);
 				} else {
 					throw new AuthException(ErrorCode.ACCESS_TOKEN_INVALID);
 				}
+			}, () -> {
+				throw new AuthException(ErrorCode.ACCESS_TOKEN_NOT_EXIST);
 			});
 		filterChain.doFilter(request, response);
 	}
