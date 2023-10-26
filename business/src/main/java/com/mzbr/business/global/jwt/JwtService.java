@@ -103,7 +103,7 @@ public class JwtService {
 	}
 
 	public boolean isTokenBlacklist(String token) {
-		if (redisTemplate.opsForValue().get(token) == null) {
+		if (redisTemplate.opsForValue().get(token) != null) {
 			throw new AuthException(ErrorCode.ACCESS_TOKEN_BLACKLIST);
 		}
 		return false;
