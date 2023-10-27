@@ -113,20 +113,16 @@ public class JwtService {
 		return false;
 	}
 
-	public void sendBothToken(HttpServletResponse response, String accessToken, String refreshToken) {
-		sendAccessToken(response, accessToken);
-		sendRefreshToken(response, refreshToken);
+	public void sendBothToken(HttpServletResponse response, String accessToken, String refreshToken) throws
+		IOException {
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+		String jsonBody =
+			"{\"" + ACCESS_HEADER + "\": \"" + accessToken + "\" \"" + REFRESH_HEADER + "\": \"" + refreshToken + "\"}";
+		response.getWriter().write(jsonBody);
 	}
 
-	public void sendAccessToken(HttpServletResponse response, String accessToken) {
-		response.addHeader(ACCESS_HEADER, PREFIX + accessToken);
-	}
-
-	public void sendRefreshToken(HttpServletResponse response, String refreshToken) {
-		response.addHeader(REFRESH_HEADER, PREFIX + refreshToken);
-	}
-
-	public void checkRefreshToken(HttpServletResponse response, String refreshToken) {
+	public void checkRefreshToken(HttpServletResponse response, String refreshToken) throws IOException {
 		String id = (String)redisTemplate.opsForValue().get(refreshToken);
 		if (id == null) {
 			throw new AuthException(ErrorCode.REFRESH_TOKEN_INVALID);

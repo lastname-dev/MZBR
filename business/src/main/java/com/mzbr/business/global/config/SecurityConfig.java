@@ -29,7 +29,7 @@ import com.mzbr.business.oauth2.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity(debug = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -60,10 +60,9 @@ public class SecurityConfig {
 			.successHandler(oAuth2LoginSuccessHandler)
 			.failureHandler(oAuth2LoginFailureHandler)
 			.userInfoEndpoint().userService(customOAuth2UserService);
-		
+
 		http.addFilterAfter(jwtAuthenticationFilter(), LogoutFilter.class);
 		http.addFilterBefore(new ExceptionHandlerFilter(), JwtAutenticationFilter.class);
-
 		return http.build();
 	}
 

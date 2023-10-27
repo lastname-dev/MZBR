@@ -23,7 +23,7 @@ public class OAuth2LoginFailureHandler implements AuthenticationFailureHandler {
 
 	@Override
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
-		AuthenticationException exception) throws IOException, ServletException {
+		AuthenticationException exception) {
 		log.error(exception.getMessage());
 		throw new AuthException(ErrorCode.OAUTH_BAD_REQUEST);
 	}

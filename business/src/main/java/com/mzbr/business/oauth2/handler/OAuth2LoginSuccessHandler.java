@@ -28,15 +28,14 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-		Authentication authentication) {
+		Authentication authentication) throws IOException {
 		CustomOAuth2User oAuth2User = (CustomOAuth2User)authentication.getPrincipal();
 
 		Member member = memberRepository.findByEmail(oAuth2User.getEmail())
 			.orElseThrow(() -> new BadRequestException(ErrorCode.USER_NOT_FOUND));
 		String accessToken = jwtService.createAccessToken(member.getId());
 		String refreshToken = jwtService.createRefreshToken();
-		jwtService.sendAccessToken(response, accessToken);
-		jwtService.sendRefreshToken(response, refreshToken);
+		jwtService.sendBothToken(response, accessToken, refreshToken);
 		jwtService.saveRefreshToken(refreshToken, member.getId());
 
 	}
