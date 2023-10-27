@@ -77,6 +77,10 @@ public class JwtService {
 			.sign(Algorithm.HMAC512(secretKey));
 	}
 
+	public void saveRefreshToken(String refreshToken, int id) {
+		redisTemplate.opsForValue().set(refreshToken, id + "", REFRESH_EXPIRATION_TIME, TimeUnit.MILLISECONDS);
+	}
+
 	public Optional<String> extractAccessToken(HttpServletRequest request) {
 		return Optional.ofNullable(request.getHeader(ACCESS_HEADER))
 			.filter(token -> token.startsWith(PREFIX))

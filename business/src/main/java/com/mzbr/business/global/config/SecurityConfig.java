@@ -22,7 +22,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import com.mzbr.business.global.exception.ExceptionHandlerFilter;
 import com.mzbr.business.global.jwt.JwtAutenticationFilter;
 import com.mzbr.business.global.jwt.JwtService;
-import com.mzbr.business.member.repository.MemberRepository;
+import com.mzbr.business.oauth2.handler.OAuth2LoginFailureHandler;
+import com.mzbr.business.oauth2.handler.OAuth2LoginSuccessHandler;
+import com.mzbr.business.oauth2.service.CustomOAuth2UserService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,6 +36,9 @@ public class SecurityConfig {
 	@Value(value = "${uri.permits}")
 	private final List<String> permitUrl;
 	private final JwtService jwtService;
+	private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+	private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
+	private final CustomOAuth2UserService customOAuth2UserService;
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -49,8 +54,13 @@ public class SecurityConfig {
 
 			.authorizeRequests()
 			.antMatchers(permitUrl.toArray(String[]::new)).permitAll()
-			.anyRequest().authenticated();
+			.anyRequest().authenticated().and()
 
+			.oauth2Login()
+			.successHandler(oAuth2LoginSuccessHandler)
+			.failureHandler(oAuth2LoginFailureHandler)
+			.userInfoEndpoint().userService(customOAuth2UserService);
+		
 		http.addFilterAfter(jwtAuthenticationFilter(), LogoutFilter.class);
 		http.addFilterBefore(new ExceptionHandlerFilter(), JwtAutenticationFilter.class);
 

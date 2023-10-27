@@ -27,6 +27,7 @@ public enum ErrorCode {
 	NOT_EXIST_AUTHORIZATION(HttpStatus.UNAUTHORIZED, "O-002", "Authorization Header가 빈값입니다."),
 	NOT_VALID_BEARER_GRANT_TYPE(HttpStatus.UNAUTHORIZED, "O-003", "인증 타입이 Bearer 타입이 아닙니다."),
 	NOT_ACCESS_TOKEN_TYPE(HttpStatus.UNAUTHORIZED, "O-004", "Access Token이 아닙니다."),
+	OAUTH_BAD_REQUEST(HttpStatus.NOT_FOUND, "O-005", "OAuth 인증이 실패하였습니다."),
 
 	// Follow
 	FOLLOW_BAD_REQUEST(HttpStatus.BAD_REQUEST, "F-001", "자기 자신을 팔로우 할 수 없습니다.");
