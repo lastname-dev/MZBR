@@ -118,7 +118,8 @@ public class JwtService {
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
 		String jsonBody =
-			"{\"" + ACCESS_HEADER + "\": \"" + accessToken + "\" \"" + REFRESH_HEADER + "\": \"" + refreshToken + "\"}";
+			"{\"" + ACCESS_HEADER + "\": \"" + accessToken + "\", \"" + REFRESH_HEADER + "\": \"" + refreshToken
+				+ "\"}";
 		response.getWriter().write(jsonBody);
 	}
 
