@@ -13,6 +13,7 @@ import com.mzbr.business.global.exception.ErrorCode;
 import com.mzbr.business.global.exception.custom.BadRequestException;
 import com.mzbr.business.global.jwt.JwtService;
 import com.mzbr.business.member.entity.Member;
+import com.mzbr.business.member.entity.Role;
 import com.mzbr.business.member.repository.MemberRepository;
 import com.mzbr.business.oauth2.CustomOAuth2User;
 
@@ -35,8 +36,11 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 			.orElseThrow(() -> new BadRequestException(ErrorCode.USER_NOT_FOUND));
 		String accessToken = jwtService.createAccessToken(member.getId());
 		String refreshToken = jwtService.createRefreshToken();
-		jwtService.sendBothToken(response, accessToken, refreshToken);
 		jwtService.saveRefreshToken(refreshToken, member.getId());
+		if (member.getRole().equals(Role.GUEST)) {
+			jwtService.sendRedirect(response, accessToken, refreshToken, false);
+		}
+		jwtService.sendRedirect(response, accessToken, refreshToken, true);
 
 	}
 }
