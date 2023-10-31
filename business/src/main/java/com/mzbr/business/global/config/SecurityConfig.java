@@ -14,9 +14,15 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import com.mzbr.business.global.exception.ExceptionHandlerFilter;
+import com.mzbr.business.global.jwt.JwtAutenticationFilter;
+import com.mzbr.business.global.jwt.JwtService;
+import com.mzbr.business.member.repository.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,6 +33,7 @@ public class SecurityConfig {
 
 	@Value(value = "${uri.permits}")
 	private final List<String> permitUrl;
+	private final JwtService jwtService;
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -42,15 +49,10 @@ public class SecurityConfig {
 
 			.authorizeRequests()
 			.antMatchers(permitUrl.toArray(String[]::new)).permitAll()
-			.anyRequest().authenticated().and()
+			.anyRequest().authenticated();
 
-			.oauth2Login();
-		// .successHandler()
-		// .failureHandler()
-		// .userInfoEndpoint().userService()
-
-		// http.addFilterAfter()
-		// http.addFilterBefore()
+		http.addFilterAfter(jwtAuthenticationFilter(), LogoutFilter.class);
+		http.addFilterBefore(new ExceptionHandlerFilter(), JwtAutenticationFilter.class);
 
 		return http.build();
 	}
@@ -76,6 +78,11 @@ public class SecurityConfig {
 		provider.setPasswordEncoder(passwordEncoder());
 		// provider.setUserDetailsService(loginService);
 		return new ProviderManager(provider);
+	}
+
+	@Bean
+	public JwtAutenticationFilter jwtAuthenticationFilter() {
+		return new JwtAutenticationFilter(jwtService, permitUrl);
 	}
 
 	@Bean

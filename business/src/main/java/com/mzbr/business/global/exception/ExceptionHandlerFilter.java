@@ -11,7 +11,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Component
+@Slf4j
 public class ExceptionHandlerFilter extends OncePerRequestFilter {
 
 	@Override
@@ -21,6 +24,7 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
 		try {
 			filterChain.doFilter(request, response);
 		} catch (Exception ex) {
+			log.error("error : {}", ex.getMessage());
 			setErrorResponse(HttpStatus.UNAUTHORIZED, request, response, ex);
 		}
 	}
