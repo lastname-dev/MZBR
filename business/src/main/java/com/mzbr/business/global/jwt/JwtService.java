@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
@@ -53,6 +54,9 @@ public class JwtService {
 	@Value("${jwt.secretKey}")
 	private String secretKey;
 
+	@Value("${uri.client}")
+	private String CLIENT_URI;
+
 	private static final String PREFIX = "Bearer ";
 	private static final String ACCESS_TOKEN_SUBJECT = "AccessToken";
 	private static final String REFRESH_TOKEN_SUBJECT = "RefreshToken";
@@ -75,6 +79,10 @@ public class JwtService {
 			.withSubject(REFRESH_TOKEN_SUBJECT)
 			.withExpiresAt(new Date(System.currentTimeMillis() + REFRESH_EXPIRATION_TIME))
 			.sign(Algorithm.HMAC512(secretKey));
+	}
+
+	public void saveRefreshToken(String refreshToken, int id) {
+		redisTemplate.opsForValue().set(refreshToken, id + "", REFRESH_EXPIRATION_TIME, TimeUnit.MILLISECONDS);
 	}
 
 	public Optional<String> extractAccessToken(HttpServletRequest request) {
@@ -109,20 +117,28 @@ public class JwtService {
 		return false;
 	}
 
-	public void sendBothToken(HttpServletResponse response, String accessToken, String refreshToken) {
-		sendAccessToken(response, accessToken);
-		sendRefreshToken(response, refreshToken);
+	public void sendBothToken(HttpServletResponse response, String accessToken, String refreshToken) throws
+		IOException {
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+		String jsonBody =
+			"{\"" + ACCESS_HEADER + "\": \"" + accessToken + "\", \"" + REFRESH_HEADER + "\": \"" + refreshToken
+				+ "\"}";
+		response.getWriter().write(jsonBody);
 	}
 
-	public void sendAccessToken(HttpServletResponse response, String accessToken) {
-		response.addHeader(ACCESS_HEADER, PREFIX + accessToken);
+	public void sendRedirect(HttpServletResponse response, String accessToken, String refreshToken,
+		boolean isMember) throws
+		IOException {
+		if (!isMember) {
+			response.sendRedirect(CLIENT_URI + "signup?accessToken=" + accessToken);
+		} else {
+			response.sendRedirect(
+				CLIENT_URI + "kakao/redirect?accessToken=" + accessToken + "&refreshToken=" + refreshToken);
+		}
 	}
 
-	public void sendRefreshToken(HttpServletResponse response, String refreshToken) {
-		response.addHeader(REFRESH_HEADER, PREFIX + refreshToken);
-	}
-
-	public void checkRefreshToken(HttpServletResponse response, String refreshToken) {
+	public void checkRefreshToken(HttpServletResponse response, String refreshToken) throws IOException {
 		String id = (String)redisTemplate.opsForValue().get(refreshToken);
 		if (id == null) {
 			throw new AuthException(ErrorCode.REFRESH_TOKEN_INVALID);

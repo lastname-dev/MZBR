@@ -12,8 +12,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.mzbr.business.member.repository.MemberRepository;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,7 +29,6 @@ public class JwtAutenticationFilter extends OncePerRequestFilter {
 		FilterChain filterChain) throws
 		ServletException,
 		IOException {
-
 		if (isPermitURI(request.getRequestURI())) {
 			filterChain.doFilter(request, response);
 			return;
