@@ -29,7 +29,7 @@ import com.mzbr.business.oauth2.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 

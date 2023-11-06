@@ -52,4 +52,12 @@ public class Member {
 			.build();
 	}
 
+	public void changeNickname(String nickname) {
+		this.nickname = nickname;
+	}
+
+	public void join() {
+		this.role = Role.MEMBER;
+	}
+
 }

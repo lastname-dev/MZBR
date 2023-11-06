@@ -176,9 +176,8 @@ public class JwtService {
 			.roles(member.getRole().name())
 			.build();
 
-		Authentication authentication =
-			new UsernamePasswordAuthenticationToken(userDetails, null,
-				authoritiesMapper.mapAuthorities(userDetails.getAuthorities()));
+		Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null,
+			authoritiesMapper.mapAuthorities(userDetails.getAuthorities()));
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 	}

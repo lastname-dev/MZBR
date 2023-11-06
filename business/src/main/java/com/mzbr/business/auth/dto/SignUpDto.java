@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @Builder
 public class SignUpDto {
 
-	private final String userId;
+	private final int userId;
 	private final String nickname;
 
-	public static SignUpDto of(String userId, String nickname) {
+	public static SignUpDto of(int userId, String nickname) {
 		return SignUpDto.builder()
 			.userId(userId)
 			.nickname(nickname)
