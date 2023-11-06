@@ -1,5 +1,6 @@
 package com.mzbr.business.auth.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,9 +20,12 @@ public class SignUpDto {
 			.build();
 	}
 
+	@Schema(title = "회원 가입")
 	@Getter
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	public static class Request {
+
+		@Schema(description = "회원 가입 닉네임", example = "홍길동")
 		private String nickname;
 	}
 
