@@ -12,6 +12,7 @@ import com.mzbr.business.auth.service.AuthService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -20,14 +21,14 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "00.Auth")
+@Tag(name = "00.Auth", description = "Auth API")
 public class AuthController {
 
 	private final AuthService authService;
 
 	@PostMapping("/join")
 	@Operation(summary = "회원 가입", description = "회원 가입한다.", responses = {
-		@ApiResponse(responseCode = "200", description = "회원 가입에 성공했습니다."),
+		@ApiResponse(responseCode = "200", description = "성공"),
 		@ApiResponse(responseCode = "409", description = "이미 가입된 회원입니다."),
 		@ApiResponse(responseCode = "409", description = "중복된 닉네임 입니다.")})
 	public ResponseEntity<Void> signUp(@RequestBody SignUpDto.Request request,

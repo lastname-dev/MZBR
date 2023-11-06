@@ -10,14 +10,14 @@ import lombok.NoArgsConstructor;
 @Getter
 public class MemberNicknameCheckDto {
 
-	// @Schema(title = "닉네임 중복 검사 요청 DTO")
+	@Schema(title = "닉네임 중복 검사 요청 DTO", name = "닉네임 중복 검사 요청")
 	@Getter
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	public static class Request {
 		private String nickname;
 	}
 
-	// @Schema(title = "닉네임 중복 검사 응답 DTO")
+	@Schema(title = "닉네임 중복 검사 응답 DTO", name = " 닉네임 중복 검사 응답")
 	@Getter
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	@AllArgsConstructor

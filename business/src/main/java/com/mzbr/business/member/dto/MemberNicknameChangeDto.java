@@ -1,4 +1,4 @@
-package com.mzbr.business.auth.dto;
+package com.mzbr.business.member.dto;
 
 import javax.validation.constraints.NotEmpty;
 
@@ -10,26 +10,23 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
-public class SignUpDto {
-
+public class MemberNicknameChangeDto {
 	private final int userId;
 	private final String nickname;
 
-	public static SignUpDto of(int userId, String nickname) {
-		return SignUpDto.builder()
+	public static MemberNicknameChangeDto of(int userId, String nickname) {
+		return MemberNicknameChangeDto.builder()
 			.userId(userId)
 			.nickname(nickname)
 			.build();
 	}
 
-	@Schema(title = "회원 가입 요청 DTO", name = "회원 가입 요청")
+	@Schema(title = "사용자 닉네임 변경 Request ", name = "닉네임 변경 요청")
 	@Getter
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	public static class Request {
-
-		@Schema(description = "회원 가입 닉네임", example = "홍길동", nullable = false)
+		@Schema(description = "변경할 닉네임", example = "홍길동")
 		@NotEmpty(message = "닉네임은 필수 항목입니다.")
-		private String nickname;
+		String nickname;
 	}
-
 }
