@@ -56,7 +56,8 @@ public class Member {
 		this.nickname = nickname;
 	}
 
-	public void join() {
+	public void join(String nickname) {
+		this.nickname = nickname;
 		this.role = Role.MEMBER;
 	}
 

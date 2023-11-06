@@ -30,7 +30,7 @@ public class AuthService {
 		if (checkDuplicateNickname(signUpDto.getNickname())) {
 			throw new BadRequestException(ErrorCode.NICKNAME_DUPLICATE);
 		}
-		member.join();
+		member.join(signUpDto.getNickname());
 	}
 
 	public boolean checkDuplicateNickname(String nickname) {
