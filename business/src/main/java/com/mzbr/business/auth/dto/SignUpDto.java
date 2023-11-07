@@ -22,12 +22,12 @@ public class SignUpDto {
 			.build();
 	}
 
-	@Schema(title = "회원 가입 요청 DTO", name = "회원 가입 요청")
+	@Schema(title = "회원 가입 Request", name = "회원 가입 Request")
 	@Getter
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	public static class Request {
 
-		@Schema(description = "회원 가입 닉네임", example = "홍길동", nullable = false)
+		@Schema(description = "닉네임", example = "홍길동", nullable = false)
 		@NotEmpty(message = "닉네임은 필수 항목입니다.")
 		private String nickname;
 	}

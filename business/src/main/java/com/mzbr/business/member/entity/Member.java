@@ -39,6 +39,8 @@ public class Member {
 
 	private String socialId;
 
+	private String profileImage;
+
 	public void authorizeUser() {
 		this.role = Role.MEMBER;
 	}
@@ -59,6 +61,10 @@ public class Member {
 	public void join(String nickname) {
 		this.nickname = nickname;
 		this.role = Role.MEMBER;
+	}
+
+	public void changeProfileImage(String profileImage) {
+		this.profileImage = profileImage;
 	}
 
 }

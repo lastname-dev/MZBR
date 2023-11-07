@@ -1,23 +1,30 @@
 package com.mzbr.business.member.service;
 
+import java.io.IOException;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.mzbr.business.global.exception.ErrorCode;
+import com.mzbr.business.global.exception.custom.AWSException;
 import com.mzbr.business.global.exception.custom.BadRequestException;
+import com.mzbr.business.global.s3.S3UploadService;
 import com.mzbr.business.member.dto.MemberNicknameChangeDto;
 import com.mzbr.business.member.entity.Member;
 import com.mzbr.business.member.repository.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MemberService {
 
 	private final MemberRepository memberRepository;
+	private final S3UploadService s3UploadService;
 
 	public boolean checkNicknameIsPresent(String nickname) {
 		Optional<Member> member = memberRepository.findByNickname(nickname);
@@ -33,5 +40,18 @@ public class MemberService {
 			throw new BadRequestException(ErrorCode.NICKNAME_DUPLICATE);
 		}
 		member.changeNickname(memberNicknameChangeDto.getNickname());
+	}
+
+	@Transactional
+	public void changeProfileImage(MultipartFile image, int memberId) {
+		try {
+			String url = s3UploadService.upload(image);
+			Member member = memberRepository.findById(memberId)
+				.orElseThrow(() -> new BadRequestException(ErrorCode.USER_NOT_FOUND));
+			member.changeProfileImage(url);
+		} catch (IOException e) {
+			log.error("error : {}", e.getMessage());
+			throw new AWSException(ErrorCode.AWS_S3_UPLOAD_EXCEPTION);
+		}
 	}
 }

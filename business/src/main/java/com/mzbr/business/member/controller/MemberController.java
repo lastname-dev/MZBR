@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.mzbr.business.member.dto.MemberNicknameChangeDto;
 import com.mzbr.business.member.dto.MemberNicknameCheckDto;
@@ -38,12 +40,19 @@ public class MemberController {
 	}
 
 	@PatchMapping("/nickname")
-	public ResponseEntity<?> changeNickname(@RequestBody MemberNicknameChangeDto.Request request,
+	public ResponseEntity<Void> changeNickname(@RequestBody MemberNicknameChangeDto.Request request,
 		@AuthenticationPrincipal @Parameter(hidden = true) UserDetails userDetails) {
 
 		memberService.changeNickname(
 			MemberNicknameChangeDto.of(Integer.parseInt(userDetails.getUsername()), request.getNickname()));
 
+		return ResponseEntity.ok().build();
+	}
+
+	@PatchMapping("/profileImage")
+	public ResponseEntity<Void> changeProfileImage(@RequestParam("profileImage") MultipartFile image,
+		@AuthenticationPrincipal UserDetails userDetails) {
+		memberService.changeProfileImage(image, Integer.parseInt(userDetails.getUsername()));
 		return ResponseEntity.ok().build();
 	}
 }
