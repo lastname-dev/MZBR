@@ -39,6 +39,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 		jwtService.saveRefreshToken(refreshToken, member.getId());
 		if (member.getRole().equals(Role.GUEST)) {
 			jwtService.sendRedirect(response, accessToken, refreshToken, false);
+			return;
 		}
 		jwtService.sendRedirect(response, accessToken, refreshToken, true);
 

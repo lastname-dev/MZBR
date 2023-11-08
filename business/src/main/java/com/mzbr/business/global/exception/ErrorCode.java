@@ -30,7 +30,10 @@ public enum ErrorCode {
 	OAUTH_BAD_REQUEST(HttpStatus.NOT_FOUND, "O-005", "OAuth 인증이 실패하였습니다."),
 
 	// Follow
-	FOLLOW_BAD_REQUEST(HttpStatus.BAD_REQUEST, "F-001", "자기 자신을 팔로우 할 수 없습니다.");
+	FOLLOW_BAD_REQUEST(HttpStatus.BAD_REQUEST, "F-001", "자기 자신을 팔로우 할 수 없습니다."),
+
+	// AWS
+	AWS_S3_UPLOAD_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "A-001", "S3 업로드가 실패하였습니다.");
 
 	ErrorCode(HttpStatus httpStatus, String errorCode, String message) {
 		this.httpStatus = httpStatus;

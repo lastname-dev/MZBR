@@ -12,5 +12,7 @@ import com.mzbr.business.member.entity.SocialType;
 public interface MemberRepository extends JpaRepository<Member, Integer> {
 	Optional<Member> findBySocialTypeAndSocialId(SocialType socialType, String socialId);
 
+	Optional<Member> findByNickname(String nickname);
+
 	Optional<Member> findByEmail(String email);
 }

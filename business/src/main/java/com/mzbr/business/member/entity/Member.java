@@ -1,5 +1,7 @@
 package com.mzbr.business.member.entity;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -7,6 +9,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 import com.mzbr.business.oauth2.userinfo.OAuth2UserInfo;
 
@@ -27,9 +30,9 @@ public class Member {
 	@Column(name = "memberId")
 	private int id;
 
-	private String email; // 이메일
+	private String email;
 
-	private String nickname; // 닉네임
+	private String nickname;
 
 	@Enumerated(EnumType.STRING)
 	private Role role;
@@ -38,6 +41,8 @@ public class Member {
 	private SocialType socialType;
 
 	private String socialId;
+
+	private String profileImage;
 
 	public void authorizeUser() {
 		this.role = Role.MEMBER;
@@ -50,6 +55,19 @@ public class Member {
 			.nickname(oAuth2UserInfo.getNickname())
 			.role(Role.GUEST)
 			.build();
+	}
+
+	public void changeNickname(String nickname) {
+		this.nickname = nickname;
+	}
+
+	public void join(String nickname) {
+		this.nickname = nickname;
+		this.role = Role.MEMBER;
+	}
+
+	public void changeProfileImage(String profileImage) {
+		this.profileImage = profileImage;
 	}
 
 }
