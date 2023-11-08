@@ -1,7 +1,9 @@
 package com.mzbr.business.member.service;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,8 +13,10 @@ import com.mzbr.business.global.exception.ErrorCode;
 import com.mzbr.business.global.exception.custom.AWSException;
 import com.mzbr.business.global.exception.custom.BadRequestException;
 import com.mzbr.business.global.s3.S3UploadService;
+import com.mzbr.business.member.dto.MemberDto;
 import com.mzbr.business.member.dto.MemberNicknameChangeDto;
 import com.mzbr.business.member.dto.MemberSubscribeDto;
+import com.mzbr.business.member.dto.MemberSubscribeListDto;
 import com.mzbr.business.member.entity.Member;
 import com.mzbr.business.member.entity.Subscription;
 import com.mzbr.business.member.repository.MemberRepository;
@@ -74,5 +78,14 @@ public class MemberService {
 				Subscription::subscribe,
 				() -> subscriptionRepository.save(Subscription.of(follower, followee))
 			);
+	}
+
+	public List<MemberDto> getSubscribeList(int userId) {
+		Member member = memberRepository.findById(userId)
+			.orElseThrow(() -> new BadRequestException(ErrorCode.USER_NOT_FOUND));
+		List<Subscription> subscriptions = subscriptionRepository.findByFollower(member);
+		List<Member> follows = subscriptions.stream().map(Subscription::getFollowee).toList();
+		List<MemberDto> list = follows.stream().map(MemberDto::from).toList();
+		return list;
 	}
 }

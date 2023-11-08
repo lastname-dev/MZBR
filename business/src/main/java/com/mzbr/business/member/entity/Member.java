@@ -44,12 +44,6 @@ public class Member {
 
 	private String profileImage;
 
-	@OneToMany(mappedBy = "follower")
-	private List<Subscription> followerList;
-
-	@OneToMany(mappedBy = "followee")
-	private List<Subscription> followeeList;
-
 	public void authorizeUser() {
 		this.role = Role.MEMBER;
 	}

@@ -1,5 +1,7 @@
 package com.mzbr.business.member.controller;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,15 +15,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.mzbr.business.member.dto.MemberDto;
 import com.mzbr.business.member.dto.MemberNicknameChangeDto;
 import com.mzbr.business.member.dto.MemberNicknameCheckDto;
 import com.mzbr.business.member.dto.MemberSubscribeDto;
+import com.mzbr.business.member.dto.MemberSubscribeListDto;
 import com.mzbr.business.member.service.MemberService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -37,7 +42,9 @@ public class MemberController {
 		@ApiResponse(responseCode = "500", description = "잘못된 요청 입니다.")})
 	public ResponseEntity<MemberNicknameCheckDto.Response> checkNicknameIsPresent(
 		@RequestBody MemberNicknameCheckDto.Request request) {
+
 		boolean isPresent = memberService.checkNicknameIsPresent(request.getNickname());
+
 		return ResponseEntity.ok(MemberNicknameCheckDto.Response.of(isPresent));
 	}
 
@@ -54,13 +61,25 @@ public class MemberController {
 	@PatchMapping("/profileImage")
 	public ResponseEntity<Void> changeProfileImage(@RequestParam("profileImage") MultipartFile image,
 		@AuthenticationPrincipal UserDetails userDetails) {
+
 		memberService.changeProfileImage(image, Integer.parseInt(userDetails.getUsername()));
+
 		return ResponseEntity.ok().build();
 	}
 
 	@PostMapping("/subscribe/{userId}")
 	public ResponseEntity<Void> subscribe(@PathVariable int userId, @AuthenticationPrincipal UserDetails userDetails) {
+
 		memberService.subscribe(MemberSubscribeDto.of(userId, Integer.parseInt(userDetails.getUsername())));
+
 		return ResponseEntity.ok().build();
+	}
+
+	@GetMapping("/subscriber/{userId}")
+	public ResponseEntity<MemberSubscribeListDto.Response> getSubscribeList(@PathVariable int userId) {
+
+		List<MemberDto> subscribeList = memberService.getSubscribeList(userId);
+		
+		return ResponseEntity.ok(MemberSubscribeListDto.Response.from(subscribeList));
 	}
 }
