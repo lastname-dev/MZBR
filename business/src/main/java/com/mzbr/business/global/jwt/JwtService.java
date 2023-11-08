@@ -82,7 +82,7 @@ public class JwtService {
 	}
 
 	public void saveRefreshToken(String refreshToken, int id) {
-		redisTemplate.opsForValue().set(refreshToken, id + "", REFRESH_EXPIRATION_TIME, TimeUnit.MILLISECONDS);
+		redisTemplate.opsForValue().set(id + "", refreshToken, REFRESH_EXPIRATION_TIME, TimeUnit.MILLISECONDS);
 	}
 
 	public Optional<String> extractAccessToken(HttpServletRequest request) {
@@ -138,12 +138,16 @@ public class JwtService {
 		}
 	}
 
-	public void checkRefreshToken(HttpServletResponse response, String refreshToken) throws IOException {
-		String id = (String)redisTemplate.opsForValue().get(refreshToken);
-		if (id == null) {
+	public void checkRefreshToken(HttpServletRequest request, HttpServletResponse response, String refreshToken) throws
+		IOException {
+		String accessToken = extractAccessToken(request).orElseThrow(
+			() -> new AuthException(ErrorCode.ACCESS_TOKEN_NOT_EXIST));
+		Integer id = extractId(accessToken).orElseThrow(() -> new AuthException(ErrorCode.ACCESS_TOKEN_INVALID));
+		if (refreshToken.equals(redisTemplate.opsForValue().get(id))) {
 			throw new AuthException(ErrorCode.REFRESH_TOKEN_INVALID);
 		}
-		String newAccessToken = createAccessToken(Integer.parseInt(id));
+
+		String newAccessToken = createAccessToken(id);
 		String newRefreshToken = createRefreshToken();
 
 		redisTemplate.opsForValue().set(newRefreshToken, id, REFRESH_EXPIRATION_TIME, TimeUnit.MILLISECONDS);

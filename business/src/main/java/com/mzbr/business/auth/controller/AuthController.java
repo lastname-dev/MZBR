@@ -1,5 +1,7 @@
 package com.mzbr.business.auth.controller;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -34,6 +36,12 @@ public class AuthController {
 	public ResponseEntity<Void> signUp(@RequestBody SignUpDto.Request request,
 		@AuthenticationPrincipal @Parameter(hidden = true) UserDetails userDetails) {
 		authService.signup(SignUpDto.of(Integer.parseInt(userDetails.getUsername()), request.getNickname()));
+		return ResponseEntity.ok().build();
+	}
+
+	@PostMapping("/log-out")
+	public ResponseEntity<Void> logout(HttpServletRequest request, @AuthenticationPrincipal UserDetails userDetails) {
+		authService.logout(request.getHeader("Authorization").substring(7), userDetails.getUsername());
 		return ResponseEntity.ok().build();
 	}
 }

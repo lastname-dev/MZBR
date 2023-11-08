@@ -1,5 +1,6 @@
 package com.mzbr.business.auth.service;
 
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthService {
 
 	private final MemberRepository memberRepository;
+	private final RedisTemplate<String, Object> redisTemplate;
 
 	@Transactional
 	public void signup(SignUpDto signUpDto) {
@@ -35,5 +37,11 @@ public class AuthService {
 
 	public boolean checkDuplicateNickname(String nickname) {
 		return memberRepository.findByNickname(nickname).isPresent();
+	}
+
+	public void logout(String accessToken, String userId) {
+		log.info("accessToken : {}", accessToken);
+		redisTemplate.opsForValue().set(accessToken, "BlackList");
+		redisTemplate.opsForValue().getAndDelete(userId);
 	}
 }
