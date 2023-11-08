@@ -12,7 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.mzbr.business.global.exception.ErrorCode;
 import com.mzbr.business.global.exception.custom.AWSException;
 import com.mzbr.business.global.exception.custom.BadRequestException;
-import com.mzbr.business.global.s3.S3UploadService;
 import com.mzbr.business.member.dto.MemberDto;
 import com.mzbr.business.member.dto.MemberNicknameChangeDto;
 import com.mzbr.business.member.dto.MemberSubscribeDto;
@@ -32,7 +31,7 @@ public class MemberService {
 
 	private final MemberRepository memberRepository;
 	private final SubscriptionRepository subscriptionRepository;
-	private final S3UploadService s3UploadService;
+	// private final S3UploadService s3UploadService;
 
 	public boolean checkNicknameIsPresent(String nickname) {
 		Optional<Member> member = memberRepository.findByNickname(nickname);
@@ -41,7 +40,7 @@ public class MemberService {
 
 	@Transactional
 	public void changeNickname(MemberNicknameChangeDto memberNicknameChangeDto) {
-		Member member = memberRepository.findByNickname(memberNicknameChangeDto.getNickname())
+		Member member = memberRepository.findById(memberNicknameChangeDto.getUserId())
 			.orElseThrow(() -> new BadRequestException(
 				ErrorCode.USER_NOT_FOUND));
 		if (checkNicknameIsPresent(memberNicknameChangeDto.getNickname())) {
@@ -52,15 +51,15 @@ public class MemberService {
 
 	@Transactional
 	public void changeProfileImage(MultipartFile image, int memberId) {
-		try {
-			String url = s3UploadService.upload(image);
-			Member member = memberRepository.findById(memberId)
-				.orElseThrow(() -> new BadRequestException(ErrorCode.USER_NOT_FOUND));
-			member.changeProfileImage(url);
-		} catch (IOException e) {
-			log.error("error : {}", e.getMessage());
-			throw new AWSException(ErrorCode.AWS_S3_UPLOAD_EXCEPTION);
-		}
+		// try {
+		// String url = s3UploadService.upload(image);
+		// Member member = memberRepository.findById(memberId)
+		// .orElseThrow(() -> new BadRequestException(ErrorCode.USER_NOT_FOUND));
+		// member.changeProfileImage(url);
+		// } catch (IOException e) {
+		// 	log.error("error : {}", e.getMessage());
+		// 	throw new AWSException(ErrorCode.AWS_S3_UPLOAD_EXCEPTION);
+		// }
 	}
 
 	@Transactional
@@ -83,7 +82,7 @@ public class MemberService {
 	public List<MemberDto> getSubscribeList(int userId) {
 		Member member = memberRepository.findById(userId)
 			.orElseThrow(() -> new BadRequestException(ErrorCode.USER_NOT_FOUND));
-		List<Subscription> subscriptions = subscriptionRepository.findByFollower(member);
+		List<Subscription> subscriptions = subscriptionRepository.findByFollowerAndIsExistedIsTrue(member);
 		List<Member> follows = subscriptions.stream().map(Subscription::getFollowee).toList();
 		List<MemberDto> list = follows.stream().map(MemberDto::from).toList();
 		return list;
