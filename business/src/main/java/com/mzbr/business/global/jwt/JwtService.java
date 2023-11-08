@@ -143,14 +143,15 @@ public class JwtService {
 		String accessToken = extractAccessToken(request).orElseThrow(
 			() -> new AuthException(ErrorCode.ACCESS_TOKEN_NOT_EXIST));
 		Integer id = extractId(accessToken).orElseThrow(() -> new AuthException(ErrorCode.ACCESS_TOKEN_INVALID));
-		if (refreshToken.equals(redisTemplate.opsForValue().get(id))) {
+	
+		if (!refreshToken.equals(redisTemplate.opsForValue().get(id + ""))) {
 			throw new AuthException(ErrorCode.REFRESH_TOKEN_INVALID);
 		}
 
 		String newAccessToken = createAccessToken(id);
 		String newRefreshToken = createRefreshToken();
 
-		redisTemplate.opsForValue().set(newRefreshToken, id, REFRESH_EXPIRATION_TIME, TimeUnit.MILLISECONDS);
+		redisTemplate.opsForValue().set(id + "", newRefreshToken, REFRESH_EXPIRATION_TIME, TimeUnit.MILLISECONDS);
 		sendBothToken(response, newAccessToken, newRefreshToken);
 	}
 
