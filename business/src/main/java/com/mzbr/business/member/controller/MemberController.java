@@ -5,6 +5,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.mzbr.business.member.dto.MemberNicknameChangeDto;
 import com.mzbr.business.member.dto.MemberNicknameCheckDto;
+import com.mzbr.business.member.dto.MemberSubscribeDto;
 import com.mzbr.business.member.service.MemberService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -53,6 +55,12 @@ public class MemberController {
 	public ResponseEntity<Void> changeProfileImage(@RequestParam("profileImage") MultipartFile image,
 		@AuthenticationPrincipal UserDetails userDetails) {
 		memberService.changeProfileImage(image, Integer.parseInt(userDetails.getUsername()));
+		return ResponseEntity.ok().build();
+	}
+
+	@PostMapping("/subscribe/{userId}")
+	public ResponseEntity<Void> subscribe(@PathVariable int userId, @AuthenticationPrincipal UserDetails userDetails) {
+		memberService.subscribe(MemberSubscribeDto.of(userId, Integer.parseInt(userDetails.getUsername())));
 		return ResponseEntity.ok().build();
 	}
 }

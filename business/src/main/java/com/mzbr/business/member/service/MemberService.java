@@ -12,8 +12,11 @@ import com.mzbr.business.global.exception.custom.AWSException;
 import com.mzbr.business.global.exception.custom.BadRequestException;
 import com.mzbr.business.global.s3.S3UploadService;
 import com.mzbr.business.member.dto.MemberNicknameChangeDto;
+import com.mzbr.business.member.dto.MemberSubscribeDto;
 import com.mzbr.business.member.entity.Member;
+import com.mzbr.business.member.entity.Subscription;
 import com.mzbr.business.member.repository.MemberRepository;
+import com.mzbr.business.member.repository.SubscriptionRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MemberService {
 
 	private final MemberRepository memberRepository;
+	private final SubscriptionRepository subscriptionRepository;
 	private final S3UploadService s3UploadService;
 
 	public boolean checkNicknameIsPresent(String nickname) {
@@ -53,5 +57,22 @@ public class MemberService {
 			log.error("error : {}", e.getMessage());
 			throw new AWSException(ErrorCode.AWS_S3_UPLOAD_EXCEPTION);
 		}
+	}
+
+	@Transactional
+	public void subscribe(MemberSubscribeDto memberSubscribeDto) {
+		Member follower = memberRepository.findById(memberSubscribeDto.getFollowerId())
+			.orElseThrow(() -> new BadRequestException(ErrorCode.USER_NOT_FOUND));
+		Member followee = memberRepository.findById(memberSubscribeDto.getFolloweeId())
+			.orElseThrow(() -> new BadRequestException(ErrorCode.USER_NOT_FOUND));
+
+		if (follower == followee)
+			throw new BadRequestException(ErrorCode.FOLLOW_BAD_REQUEST);
+
+		subscriptionRepository.findByFolloweeAndFollower(followee, follower)
+			.ifPresentOrElse(
+				Subscription::subscribe,
+				() -> subscriptionRepository.save(Subscription.of(follower, followee))
+			);
 	}
 }
