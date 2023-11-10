@@ -23,11 +23,11 @@ public class StoreSearchDto {
 			.build();
 	}
 
-	@Getter
-	@AllArgsConstructor
-	@NoArgsConstructor(access = AccessLevel.PROTECTED)
-	@Builder
-	public static class Response {
-
-	}
+	// @Getter
+	// @AllArgsConstructor
+	// @NoArgsConstructor(access = AccessLevel.PROTECTED)
+	// @Builder
+	// public static class Response {
+	//
+	// }
 }
