@@ -79,5 +79,8 @@ public class StoreService {
 		return storeResultDto;
 		// log.info("result : {}", storeResultDto.getHits().getHits()[0].get_source().getName());
 	}
-	// public void changeStar()
+
+	public void changeStar() {
+		
+	}
 }

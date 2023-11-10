@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 
 import com.mzbr.business.store.dto.Location;
 
@@ -30,4 +31,7 @@ public class Store {
 
 	@Embedded
 	private Location location;
+
+	@OneToOne(mappedBy = "store")
+	private StoreCalculation storeCalculation;
 }
