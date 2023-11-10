@@ -23,8 +23,6 @@ public class ElasticsearchConfig extends AbstractElasticsearchConfiguration {
 	@Override
 	@Bean
 	public RestHighLevelClient elasticsearchClient() {
-		System.out.println(ELASTIC_USER_NAME + " " + ELASTIC_USER_PASSWORD);
-
 		ClientConfiguration clientConfiguration = ClientConfiguration.builder()
 			.connectedTo(ELASTIC_URL + ":" + ELASTIC_PORT)
 			.withBasicAuth(ELASTIC_USER_NAME, ELASTIC_USER_PASSWORD)
