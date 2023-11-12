@@ -46,8 +46,8 @@ public class JwtAutenticationFilter extends OncePerRequestFilter {
 	}
 
 	public boolean isPermitURI(String uri,String contextPath) {
-		for (String permitUrl : permitUrl) {
-			if (pathMatcher.match(contextPath+permitUrl, uri)) {
+		for (int i = 0; i < permitUrl.size(); i++) {
+			if(pathMatcher.match(contextPath+permitUrl.get(i),uri)){
 				return true;
 			}
 		}
