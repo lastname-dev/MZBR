@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,13 +41,17 @@ public class StoreController {
 	}
 
 	@GetMapping("/search")
-	public ResponseEntity<?> searchStoresByCondition(@RequestParam double topLat, @RequestParam double topLng,
-		@RequestParam double bottomLat, @RequestParam double bottomLng, @RequestParam String name,
-		@RequestParam int star) throws
+	public ResponseEntity<StoreSearchDto.Response> searchStoresByCondition(@RequestParam double topLat, @RequestParam double topLng,
+		@RequestParam double bottomLat, @RequestParam double bottomLng, @RequestParam(defaultValue = "") String name,
+		@RequestParam(defaultValue = "0") int star) throws
 		IOException {
 		List<StoreDto> storeDtos = storeService.searchByCondition(
 			StoreSearchDto.of(SquareLocation.of(topLat, topLng, bottomLat, bottomLng), name, star));
 		return ResponseEntity.ok(StoreSearchDto.Response.from(storeDtos));
+	}
+	@GetMapping("/{restaurantId}/vides")
+	public ResponseEntity<?> searchVideos(@PathVariable long restaurantId) {
 
+		return ResponseEntity.ok().build();
 	}
 }

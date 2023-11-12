@@ -20,7 +20,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.mzbr.business.global.exception.ExceptionHandlerFilter;
-import com.mzbr.business.global.jwt.JwtAutenticationFilter;
+import com.mzbr.business.global.jwt.JwtAuthenticationFilter;
 import com.mzbr.business.global.jwt.JwtService;
 import com.mzbr.business.oauth2.handler.OAuth2LoginFailureHandler;
 import com.mzbr.business.oauth2.handler.OAuth2LoginSuccessHandler;
@@ -48,8 +48,8 @@ public class SecurityConfig {
 			.csrf().disable()
 			.formLogin().disable()
 			.httpBasic().disable()
-			.headers().frameOptions().disable()
-			.xssProtection().and().contentSecurityPolicy("script-src 'self'").and().and()
+			.headers().frameOptions().disable().and()
+			// .xssProtection().and().contentSecurityPolicy("script-src 'self'").and().and()
 			.cors().and()
 
 			.authorizeRequests()
@@ -62,7 +62,7 @@ public class SecurityConfig {
 			.userInfoEndpoint().userService(customOAuth2UserService);
 
 		http.addFilterAfter(jwtAuthenticationFilter(), LogoutFilter.class);
-		http.addFilterBefore(new ExceptionHandlerFilter(), JwtAutenticationFilter.class);
+		http.addFilterBefore(new ExceptionHandlerFilter(), JwtAuthenticationFilter.class);
 		return http.build();
 	}
 
@@ -90,8 +90,8 @@ public class SecurityConfig {
 	}
 
 	@Bean
-	public JwtAutenticationFilter jwtAuthenticationFilter() {
-		return new JwtAutenticationFilter(jwtService, permitUrl);
+	public JwtAuthenticationFilter jwtAuthenticationFilter() {
+		return new JwtAuthenticationFilter(jwtService, permitUrl);
 	}
 
 	@Bean

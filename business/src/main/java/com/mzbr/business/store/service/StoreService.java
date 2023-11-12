@@ -77,7 +77,9 @@ public class StoreService {
 		SquareLocation squareLocation = storeSearchDto.getSquareLocation();
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
-		boolQueryBuilder.must(QueryBuilders.matchQuery(NAME_FIELD, storeSearchDto.getName()));
+		if(!storeSearchDto.getName().equals("")) {
+			boolQueryBuilder.must(QueryBuilders.matchQuery(NAME_FIELD, storeSearchDto.getName()));
+		}
 		boolQueryBuilder.must(new GeoBoundingBoxQueryBuilder(LOCATION_FIELD)
 			.setCorners(new GeoPoint(squareLocation.getTopLat(), squareLocation.getBottomLng()),
 				new GeoPoint(squareLocation.getBottomLat(), squareLocation.getTopLng())));

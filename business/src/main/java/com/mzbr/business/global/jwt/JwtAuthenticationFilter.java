@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
 @Slf4j
-public class JwtAutenticationFilter extends OncePerRequestFilter {
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private final JwtService jwtService;
 	private final AntPathMatcher pathMatcher = new AntPathMatcher();
@@ -33,7 +33,6 @@ public class JwtAutenticationFilter extends OncePerRequestFilter {
 			filterChain.doFilter(request, response);
 			return;
 		}
-
 		String refreshToken = jwtService.extractRefreshToken(request)
 			.filter(jwtService::isTokenValid)
 			.orElse(null);
