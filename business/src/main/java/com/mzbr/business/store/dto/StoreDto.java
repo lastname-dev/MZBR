@@ -1,5 +1,7 @@
 package com.mzbr.business.store.dto;
 
+import com.mzbr.business.store.entity.Store;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,6 +29,15 @@ public class StoreDto {
 			.address(source.getAddress())
 			.build();
 	}
-	
+	public static StoreDto of(StoreResultDto.Source source,float star){
+		return StoreDto.builder()
+			.storeId(source.getId())
+			.storeName(source.getName())
+			.latitude(source.getLocation().getLat())
+			.longitude(source.getLocation().getLon())
+			.address(source.getAddress())
+			.starCount(star)
+			.build();
+	}
 
 }
