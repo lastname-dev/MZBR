@@ -1,5 +1,7 @@
 package com.mzbr.business.store.dto;
 
+import java.util.List;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,6 +17,12 @@ public class StoreSearchDto {
 	private String name;
 	private int star;
 
+	public static StoreSearchDto of(SquareLocation squareLocation) {
+		return StoreSearchDto.builder()
+			.squareLocation(squareLocation)
+			.build();
+	}
+
 	public static StoreSearchDto of(SquareLocation squareLocation, String name, int star) {
 		return StoreSearchDto.builder()
 			.squareLocation(squareLocation)
@@ -23,11 +31,19 @@ public class StoreSearchDto {
 			.build();
 	}
 
-	// @Getter
-	// @AllArgsConstructor
-	// @NoArgsConstructor(access = AccessLevel.PROTECTED)
-	// @Builder
-	// public static class Response {
-	//
-	// }
+	@Getter
+	@AllArgsConstructor
+	@NoArgsConstructor(access = AccessLevel.PROTECTED)
+	@Builder
+	public static class Response {
+		private List<StoreDto> stores;
+
+		public static Response from(List<StoreDto> stores){
+			return Response.builder()
+				.stores(stores)
+				.build();
+		}
+	}
+
+
 }
