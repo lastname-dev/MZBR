@@ -29,7 +29,7 @@ public class JwtAutenticationFilter extends OncePerRequestFilter {
 		FilterChain filterChain) throws
 		ServletException,
 		IOException {
-		if (isPermitURI(request.getRequestURI())) {
+		if (isPermitURI(request.getRequestURI(),request.getContextPath())) {
 			filterChain.doFilter(request, response);
 			return;
 		}
@@ -45,9 +45,9 @@ public class JwtAutenticationFilter extends OncePerRequestFilter {
 		}
 	}
 
-	public boolean isPermitURI(String uri) {
-		for (String permitUrl : permitUrl) {
-			if (pathMatcher.match(permitUrl, uri)) {
+	public boolean isPermitURI(String uri,String contextPath) {
+		for (int i = 0; i < permitUrl.size(); i++) {
+			if(pathMatcher.match(contextPath+permitUrl.get(i),uri)){
 				return true;
 			}
 		}
