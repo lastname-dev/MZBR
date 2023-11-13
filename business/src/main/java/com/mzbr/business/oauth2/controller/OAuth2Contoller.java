@@ -20,7 +20,6 @@ public class OAuth2Contoller {
 
 	@GetMapping("/oauth2/code")
 	public ResponseEntity<?> login(@RequestParam String code) {
-		log.info("code:{}", code);
 		String kakaoAccessToken = kakaoLoginService.getKakaoAccessToken(code);
 		UserOauthInfo userInfo = kakaoLoginService.getUserInfo(kakaoAccessToken);
 
