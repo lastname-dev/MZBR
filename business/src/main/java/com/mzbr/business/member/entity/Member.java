@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import com.mzbr.business.oauth2.kakao.dto.UserOauthInfo;
 import com.mzbr.business.oauth2.userinfo.OAuth2UserInfo;
 
 import lombok.AllArgsConstructor;
@@ -53,6 +54,15 @@ public class Member {
 			.socialType(socialType)
 			.socialId(oAuth2UserInfo.getId())
 			.nickname(oAuth2UserInfo.getNickname())
+			.role(Role.GUEST)
+			.build();
+	}
+
+	public static Member of(SocialType socialType, UserOauthInfo userOauthInfo) {
+		return Member.builder()
+			.socialType(socialType)
+			.socialId(userOauthInfo.getSocial_id())
+			.nickname(userOauthInfo.getNickName())
 			.role(Role.GUEST)
 			.build();
 	}
