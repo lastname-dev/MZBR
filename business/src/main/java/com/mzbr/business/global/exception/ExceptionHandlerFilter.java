@@ -24,6 +24,7 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
 		try {
 			filterChain.doFilter(request, response);
 		} catch (Exception ex) {
+			ex.printStackTrace();
 			log.error("error : {}", ex.getMessage());
 			setErrorResponse(HttpStatus.UNAUTHORIZED, request, response, ex);
 		}

@@ -36,7 +36,7 @@ public class ErrorResponse {
 			.status(httpStatus.value())
 			.errorCode(httpStatus.getReasonPhrase())
 			.errorMessage(errorMessage)
-			.path(request.getContextPath())
+			.path(request.getRequestURI())
 			.build();
 	}
 

@@ -33,7 +33,10 @@ public enum ErrorCode {
 	FOLLOW_BAD_REQUEST(HttpStatus.BAD_REQUEST, "F-001", "자기 자신을 팔로우 할 수 없습니다."),
 
 	// AWS
-	AWS_S3_UPLOAD_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "A-001", "S3 업로드가 실패하였습니다.");
+	AWS_S3_UPLOAD_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "A-001", "S3 업로드가 실패하였습니다."),
+
+	// Store
+	STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "S-001", "존재하지 않는 식당입니다.");
 
 	ErrorCode(HttpStatus httpStatus, String errorCode, String message) {
 		this.httpStatus = httpStatus;

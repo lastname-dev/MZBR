@@ -21,7 +21,6 @@ public class StoreResultDto {
 		private int skipped;
 		private int failed;
 
-		// getters and setters
 	}
 
 	@Getter
@@ -30,14 +29,11 @@ public class StoreResultDto {
 		private float max_score;
 		private Hit[] hits;
 
-		// getters and setters
 	}
 
 	public static class Total {
 		private int value;
 		private String relation;
-
-		// getters and setters
 	}
 
 	@Getter
@@ -48,7 +44,6 @@ public class StoreResultDto {
 		private float _score;
 		private Source _source;
 
-		// getters and setters
 	}
 
 	@Getter
@@ -59,13 +54,11 @@ public class StoreResultDto {
 		private String address;
 		private Location location;
 
-		// getters and setters
 	}
 
+	@Getter
 	public static class Location {
 		private double lat;
 		private double lon;
-
-		// getters and setters
 	}
 }

@@ -1,6 +1,11 @@
 package com.mzbr.business.store.service;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -12,14 +17,19 @@ import org.elasticsearch.index.query.GeoBoundingBoxQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mzbr.business.global.exception.ErrorCode;
+import com.mzbr.business.global.exception.custom.BadRequestException;
 import com.mzbr.business.store.dto.SquareLocation;
+import com.mzbr.business.store.dto.StoreDto;
 import com.mzbr.business.store.dto.StoreResultDto;
 import com.mzbr.business.store.dto.StoreSearchDto;
+import com.mzbr.business.store.entity.Store;
+import com.mzbr.business.store.entity.StoreCalculation;
+import com.mzbr.business.store.repository.StoreCalculationRepository;
 import com.mzbr.business.store.repository.StoreRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -31,7 +41,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class StoreService {
 
-	private final ElasticsearchOperations elasticsearchOperations;
+	private final StoreCalculationRepository storeCalculationRepository;
 	private final StoreRepository storeRepository;
 	private final RestHighLevelClient client;
 	private final ObjectMapper objectMapper;
@@ -42,45 +52,65 @@ public class StoreService {
 	private static final String LOCATION_FIELD = "location";
 
 	@Transactional
-	public StoreResultDto searchAroundStores(double topLat, double topLong, double bottomLat, double bottomLong) throws
-		IOException {
+	public List<StoreDto> searchAroundStores(StoreSearchDto storeSearchDto) throws IOException {
+		SquareLocation location = storeSearchDto.getSquareLocation();
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder()
-			.query(new GeoBoundingBoxQueryBuilder(LOCATION_FIELD).setCorners(new GeoPoint(topLat, bottomLong),
-				new GeoPoint(bottomLat, topLong)));
+			.query(new GeoBoundingBoxQueryBuilder(LOCATION_FIELD).setCorners(new GeoPoint(location.getTopLat(), location.getBottomLng()),
+				new GeoPoint(location.getBottomLat(), location.getTopLng())));
 
-		SearchRequest searchRequest = new SearchRequest(INDEX_NAME).source(searchSourceBuilder);
+		StoreResultDto storeResultDto = executeSearchRequest(searchSourceBuilder);
 
-		SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
-		String resultJson = searchResponse.toString();
-		StoreResultDto storeResultDto = objectMapper.readValue(resultJson, StoreResultDto.class);
-		return storeResultDto;
+		return mapToStoreDtoList(storeResultDto) ;
 	}
 
 	@Transactional
-	public StoreResultDto searchByCondition(StoreSearchDto storeSearchDto) throws
-		IOException {
+	public List<StoreDto> searchByCondition(StoreSearchDto storeSearchDto) throws IOException {
+		SearchSourceBuilder searchSourceBuilder = buildSearchSourceBuilder(storeSearchDto);
+
+		StoreResultDto storeResultDto = executeSearchRequest(searchSourceBuilder);
+
+
+		return mapToStoreDtoList(storeResultDto);
+	}
+
+	private SearchSourceBuilder buildSearchSourceBuilder(StoreSearchDto storeSearchDto) {
 		SquareLocation squareLocation = storeSearchDto.getSquareLocation();
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
-
-		boolQueryBuilder.must(QueryBuilders.matchQuery(NAME_FIELD, storeSearchDto.getName()));
-
+		if(!storeSearchDto.getName().equals("")) {
+			boolQueryBuilder.must(QueryBuilders.matchQuery(NAME_FIELD, storeSearchDto.getName()));
+		}
 		boolQueryBuilder.must(new GeoBoundingBoxQueryBuilder(LOCATION_FIELD)
 			.setCorners(new GeoPoint(squareLocation.getTopLat(), squareLocation.getBottomLng()),
 				new GeoPoint(squareLocation.getBottomLat(), squareLocation.getTopLng())));
-
 		searchSourceBuilder.query(boolQueryBuilder);
+		return searchSourceBuilder;
+	}
 
+	private StoreResultDto executeSearchRequest(SearchSourceBuilder searchSourceBuilder) throws IOException {
 		SearchRequest searchRequest = new SearchRequest(INDEX_NAME).source(searchSourceBuilder);
 		SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
-
 		String resultJson = searchResponse.toString();
-		StoreResultDto storeResultDto = objectMapper.readValue(resultJson, StoreResultDto.class);
-		return storeResultDto;
-		// log.info("result : {}", storeResultDto.getHits().getHits()[0].get_source().getName());
+		return objectMapper.readValue(resultJson, StoreResultDto.class);
 	}
 
-	public void changeStar() {
-		
+	private List<StoreDto> mapToStoreDtoList(StoreResultDto storeResultDto) {
+		return Arrays.stream(storeResultDto.getHits().getHits())
+			.map(this::getStoreDtoFromHit)
+			.collect(Collectors.toList());
 	}
+
+	private StoreDto getStoreDtoFromHit(StoreResultDto.Hit hit) {
+		Long storeId = (long) hit.get_source().getId();
+		Store store = storeRepository.findById(storeId)
+			.orElseThrow(() -> new BadRequestException(ErrorCode.STORE_NOT_FOUND));
+
+		Optional<StoreCalculation> storeCalculation = storeCalculationRepository.findByStore(store);
+		float averageStar = storeCalculation.map(calculation -> calculation.getStar_sum() / (float) calculation.getStar_count())
+			.orElse(0.0F);
+
+		return storeCalculation.map(calculation -> StoreDto.of(hit.get_source(), averageStar))
+			.orElseGet(() -> StoreDto.from(hit.get_source()));
+	}
+
 }

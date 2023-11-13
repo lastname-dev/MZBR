@@ -1,14 +1,17 @@
 package com.mzbr.business.store.controller;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mzbr.business.store.dto.SquareLocation;
+import com.mzbr.business.store.dto.StoreDto;
 import com.mzbr.business.store.dto.StoreSearchDto;
 import com.mzbr.business.store.service.StoreService;
 
@@ -28,20 +31,27 @@ public class StoreController {
 
 	@GetMapping
 	@Operation(summary = "식당 조회", description = "주변 식당을 조회한다.")
-	public ResponseEntity<?> searchAroundStores(@RequestParam double topLat, @RequestParam double topLng,
+	public ResponseEntity<StoreSearchDto.Response> searchAroundStores(@RequestParam double topLat,
+		@RequestParam double topLng,
 		@RequestParam double bottomLat, @RequestParam double bottomLng) throws
 		IOException {
-		storeService.searchAroundStores(topLat, topLng, bottomLat, bottomLng);
-		return ResponseEntity.ok().build();
+		List<StoreDto> storeDtos = storeService.searchAroundStores(
+			StoreSearchDto.of(SquareLocation.of(topLat, topLng, bottomLat, bottomLng)));
+		return ResponseEntity.ok(StoreSearchDto.Response.from(storeDtos));
 	}
 
 	@GetMapping("/search")
-	public ResponseEntity<?> searchStoresByCondition(@RequestParam double topLat, @RequestParam double topLng,
-		@RequestParam double bottomLat, @RequestParam double bottomLng, @RequestParam String name,
-		@RequestParam int star) throws
+	public ResponseEntity<StoreSearchDto.Response> searchStoresByCondition(@RequestParam double topLat, @RequestParam double topLng,
+		@RequestParam double bottomLat, @RequestParam double bottomLng, @RequestParam(defaultValue = "") String name,
+		@RequestParam(defaultValue = "0") int star) throws
 		IOException {
-		storeService.searchByCondition(
+		List<StoreDto> storeDtos = storeService.searchByCondition(
 			StoreSearchDto.of(SquareLocation.of(topLat, topLng, bottomLat, bottomLng), name, star));
+		return ResponseEntity.ok(StoreSearchDto.Response.from(storeDtos));
+	}
+	@GetMapping("/{restaurantId}/vides")
+	public ResponseEntity<?> searchVideos(@PathVariable long restaurantId) {
+
 		return ResponseEntity.ok().build();
 	}
 }
