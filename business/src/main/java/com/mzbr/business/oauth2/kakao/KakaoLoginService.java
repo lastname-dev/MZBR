@@ -60,6 +60,8 @@ public class KakaoLoginService {
 			userOauthInfo.setOwnJwtAccessToken(accessToken);
 			if (member.get().getRole().equals(Role.MEMBER)) {
 				String refreshToken = jwtService.createRefreshToken();
+				userOauthInfo.setSocial_id(member.get().getId()+"");
+				userOauthInfo.setNickName(member.get().getNickname());
 				userOauthInfo.setOwnJwtRefreshToken(refreshToken);
 				userOauthInfo.setUser(true);
 			}
