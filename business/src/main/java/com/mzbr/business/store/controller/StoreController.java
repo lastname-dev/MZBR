@@ -43,8 +43,7 @@ public class StoreController {
 	}
 
 	@GetMapping("/search")
-	public ResponseEntity<StoreSearchDto.Response> searchStoresByCondition(@RequestParam double topLat,
-		@RequestParam double topLng,
+	public ResponseEntity<StoreSearchDto.Response> searchStoresByCondition(@RequestParam double topLat, @RequestParam double topLng,
 		@RequestParam double bottomLat, @RequestParam double bottomLng, @RequestParam(defaultValue = "") String keyword,
 		@RequestParam(defaultValue = "0") int star) throws
 		IOException {
