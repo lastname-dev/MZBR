@@ -1,5 +1,7 @@
 package com.mzbr.business.video.service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -47,9 +49,20 @@ public class VideoService {
 
 	}
 
-	// public List<VideoDto> getNearVideos(StoreSearchDto storeSearchDto) {
-	// 	List<StoreDto> storeDtos = storeService.searchAroundStores(storeSearchDto);
-	// }
+	public List<VideoDto> getNearVideos(StoreSearchDto storeSearchDto) {
+		List<StoreDto> storeDtos = storeService.searchAroundStores(storeSearchDto);
+		// 랜덤으로 근처 영상 뿌리게 구현, 성능 상당히 떨어질 것으로 예상, 추후 변경 필요
+		List<VideoDto> videoDtos = new ArrayList<>();
+		for(StoreDto storeDto : storeDtos) {
+			Store store = storeRepository.findById(storeDto.getStoreId()).get();
+			List<Video> videos = store.getVideos();
+			for(Video video : videos){
+				videoDtos.add(VideoDto.from(video));
+			}
+		}
+		Collections.shuffle(videoDtos);
+		return videoDtos;
+	}
 
 	public List<VideoDto> getStoreVideos(long storeId) {
 		Store store = storeRepository.findById(storeId)
