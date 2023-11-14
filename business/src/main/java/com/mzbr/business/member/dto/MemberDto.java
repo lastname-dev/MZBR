@@ -16,6 +16,9 @@ public class MemberDto {
 	private String profileImage;
 	private String nickname;
 
+	private int subscribeCount;
+	private int postCount;
+
 	public static MemberDto from(Member member) {
 		return MemberDto.builder()
 			.userId(member.getId())
