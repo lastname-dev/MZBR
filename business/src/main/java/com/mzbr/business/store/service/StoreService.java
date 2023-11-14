@@ -52,15 +52,16 @@ public class StoreService {
 	private static final String LOCATION_FIELD = "location";
 
 	@Transactional
-	public List<StoreDto> searchAroundStores(StoreSearchDto storeSearchDto) throws IOException {
+	public List<StoreDto> searchAroundStores(StoreSearchDto storeSearchDto) {
 		SquareLocation location = storeSearchDto.getSquareLocation();
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder()
-			.query(new GeoBoundingBoxQueryBuilder(LOCATION_FIELD).setCorners(new GeoPoint(location.getTopLat(), location.getBottomLng()),
+			.query(new GeoBoundingBoxQueryBuilder(LOCATION_FIELD).setCorners(
+				new GeoPoint(location.getTopLat(), location.getBottomLng()),
 				new GeoPoint(location.getBottomLat(), location.getTopLng())));
 
 		StoreResultDto storeResultDto = executeSearchRequest(searchSourceBuilder);
 
-		return mapToStoreDtoList(storeResultDto) ;
+		return mapToStoreDtoList(storeResultDto);
 	}
 
 	@Transactional
@@ -69,7 +70,6 @@ public class StoreService {
 
 		StoreResultDto storeResultDto = executeSearchRequest(searchSourceBuilder);
 
-
 		return mapToStoreDtoList(storeResultDto);
 	}
 
@@ -77,7 +77,7 @@ public class StoreService {
 		SquareLocation squareLocation = storeSearchDto.getSquareLocation();
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
-		if(!storeSearchDto.getName().equals("")) {
+		if (!storeSearchDto.getName().equals("")) {
 			boolQueryBuilder.must(QueryBuilders.matchQuery(NAME_FIELD, storeSearchDto.getName()));
 		}
 		boolQueryBuilder.must(new GeoBoundingBoxQueryBuilder(LOCATION_FIELD)
@@ -87,11 +87,16 @@ public class StoreService {
 		return searchSourceBuilder;
 	}
 
-	private StoreResultDto executeSearchRequest(SearchSourceBuilder searchSourceBuilder) throws IOException {
+	private StoreResultDto executeSearchRequest(SearchSourceBuilder searchSourceBuilder) {
 		SearchRequest searchRequest = new SearchRequest(INDEX_NAME).source(searchSourceBuilder);
-		SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
-		String resultJson = searchResponse.toString();
-		return objectMapper.readValue(resultJson, StoreResultDto.class);
+		try {
+			SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);
+
+			String resultJson = searchResponse.toString();
+			return objectMapper.readValue(resultJson, StoreResultDto.class);
+		} catch (Exception e) {
+			throw new BadRequestException(ErrorCode.STORE_SEARCH_EXCEPTION);
+		}
 	}
 
 	private List<StoreDto> mapToStoreDtoList(StoreResultDto storeResultDto) {
@@ -101,12 +106,13 @@ public class StoreService {
 	}
 
 	private StoreDto getStoreDtoFromHit(StoreResultDto.Hit hit) {
-		Long storeId = (long) hit.get_source().getId();
+		Long storeId = (long)hit.get_source().getId();
 		Store store = storeRepository.findById(storeId)
 			.orElseThrow(() -> new BadRequestException(ErrorCode.STORE_NOT_FOUND));
 
 		Optional<StoreCalculation> storeCalculation = storeCalculationRepository.findByStore(store);
-		float averageStar = storeCalculation.map(calculation -> calculation.getStar_sum() / (float) calculation.getStar_count())
+		float averageStar = storeCalculation.map(
+				calculation -> calculation.getStar_sum() / (float)calculation.getStar_count())
 			.orElse(0.0F);
 
 		return storeCalculation.map(calculation -> StoreDto.of(hit.get_source(), averageStar))

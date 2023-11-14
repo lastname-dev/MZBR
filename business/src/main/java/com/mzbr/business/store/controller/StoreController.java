@@ -30,7 +30,6 @@ import lombok.extern.slf4j.Slf4j;
 public class StoreController {
 
 	private final StoreService storeService;
-	private final VideoService videoService;
 
 	@GetMapping
 	@Operation(summary = "식당 조회", description = "주변 식당을 조회한다.")
@@ -52,12 +51,6 @@ public class StoreController {
 		List<StoreDto> storeDtos = storeService.searchByCondition(
 			StoreSearchDto.of(SquareLocation.of(topLat, topLng, bottomLat, bottomLng), name, star));
 		return ResponseEntity.ok(StoreSearchDto.Response.from(storeDtos));
-	}
-
-	@GetMapping("/{storeId}/videos")
-	public ResponseEntity<VideoDto.Response> getVideos(@PathVariable long storeId) {
-		List<VideoDto> storeVideos = videoService.getStoreVideos(storeId);
-		return ResponseEntity.ok(VideoDto.Response.from(storeVideos));
 	}
 
 }
