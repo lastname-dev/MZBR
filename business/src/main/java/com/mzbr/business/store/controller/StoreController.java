@@ -45,11 +45,11 @@ public class StoreController {
 	@GetMapping("/search")
 	public ResponseEntity<StoreSearchDto.Response> searchStoresByCondition(@RequestParam double topLat,
 		@RequestParam double topLng,
-		@RequestParam double bottomLat, @RequestParam double bottomLng, @RequestParam(defaultValue = "") String name,
+		@RequestParam double bottomLat, @RequestParam double bottomLng, @RequestParam(defaultValue = "") String keyword,
 		@RequestParam(defaultValue = "0") int star) throws
 		IOException {
 		List<StoreDto> storeDtos = storeService.searchByCondition(
-			StoreSearchDto.of(SquareLocation.of(topLat, topLng, bottomLat, bottomLng), name, star));
+			StoreSearchDto.of(SquareLocation.of(topLat, topLng, bottomLat, bottomLng), keyword, star));
 		return ResponseEntity.ok(StoreSearchDto.Response.from(storeDtos));
 	}
 

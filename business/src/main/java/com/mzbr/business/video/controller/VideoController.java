@@ -27,11 +27,11 @@ public class VideoController {
 
 	private final VideoService videoService;
 
-	@GetMapping("/{videoId}")
-	public ResponseEntity<?> getVideoInfo(@AuthenticationPrincipal UserDetails userDetails,
-		@PathVariable long videoId) {
-		videoService.getVideoinfo(VideoViewDto.of(userDetails.getUsername(), videoId));
-	}
+	// @GetMapping("/{videoId}")
+	// public ResponseEntity<?> getVideoInfo(@AuthenticationPrincipal UserDetails userDetails,
+	// 	@PathVariable long videoId) {
+	// 	videoService.getVideoinfo(VideoViewDto.of(Long.parseLong(userDetails.getUsername()), videoId));
+	// }
 
 	// @GetMapping
 	// public ResponseEntity<?> getNearVideos(@RequestParam double topLat,
