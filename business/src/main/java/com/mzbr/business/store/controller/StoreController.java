@@ -14,6 +14,8 @@ import com.mzbr.business.store.dto.SquareLocation;
 import com.mzbr.business.store.dto.StoreDto;
 import com.mzbr.business.store.dto.StoreSearchDto;
 import com.mzbr.business.store.service.StoreService;
+import com.mzbr.business.video.dto.VideoDto;
+import com.mzbr.business.video.service.VideoService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 public class StoreController {
 
 	private final StoreService storeService;
+	private final VideoService videoService;
 
 	@GetMapping
 	@Operation(summary = "식당 조회", description = "주변 식당을 조회한다.")
@@ -41,7 +44,8 @@ public class StoreController {
 	}
 
 	@GetMapping("/search")
-	public ResponseEntity<StoreSearchDto.Response> searchStoresByCondition(@RequestParam double topLat, @RequestParam double topLng,
+	public ResponseEntity<StoreSearchDto.Response> searchStoresByCondition(@RequestParam double topLat,
+		@RequestParam double topLng,
 		@RequestParam double bottomLat, @RequestParam double bottomLng, @RequestParam(defaultValue = "") String name,
 		@RequestParam(defaultValue = "0") int star) throws
 		IOException {
@@ -49,9 +53,11 @@ public class StoreController {
 			StoreSearchDto.of(SquareLocation.of(topLat, topLng, bottomLat, bottomLng), name, star));
 		return ResponseEntity.ok(StoreSearchDto.Response.from(storeDtos));
 	}
-	@GetMapping("/{restaurantId}/vides")
-	public ResponseEntity<?> searchVideos(@PathVariable long restaurantId) {
 
-		return ResponseEntity.ok().build();
+	@GetMapping("/{storeId}/videos")
+	public ResponseEntity<VideoDto.Response> getVideos(@PathVariable long storeId) {
+		List<VideoDto> storeVideos = videoService.getStoreVideos(storeId);
+		return ResponseEntity.ok(VideoDto.Response.from(storeVideos));
 	}
+
 }
