@@ -10,10 +10,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class MemberSubscribeDto {
-	private int followeeId;
-	private int followerId;
+	private long followeeId;
+	private long followerId;
 
-	public static MemberSubscribeDto of(int followeeId, int followerId) {
+	public static MemberSubscribeDto of(long followeeId, long followerId) {
 		return MemberSubscribeDto.builder()
 			.followeeId(followeeId)
 			.followerId(followerId)

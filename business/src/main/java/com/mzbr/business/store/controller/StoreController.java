@@ -14,6 +14,8 @@ import com.mzbr.business.store.dto.SquareLocation;
 import com.mzbr.business.store.dto.StoreDto;
 import com.mzbr.business.store.dto.StoreSearchDto;
 import com.mzbr.business.store.service.StoreService;
+import com.mzbr.business.video.dto.VideoDto;
+import com.mzbr.business.video.service.VideoService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -49,9 +51,5 @@ public class StoreController {
 			StoreSearchDto.of(SquareLocation.of(topLat, topLng, bottomLat, bottomLng), keyword, star));
 		return ResponseEntity.ok(StoreSearchDto.Response.from(storeDtos));
 	}
-	@GetMapping("/{restaurantId}/vides")
-	public ResponseEntity<?> searchVideos(@PathVariable long restaurantId) {
 
-		return ResponseEntity.ok().build();
-	}
 }

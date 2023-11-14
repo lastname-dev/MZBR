@@ -79,7 +79,7 @@ public class MemberService {
 			);
 	}
 
-	public List<MemberDto> getSubscribeList(int userId) {
+	public List<MemberDto> getSubscribeList(long userId) {
 		Member member = memberRepository.findById(userId)
 			.orElseThrow(() -> new BadRequestException(ErrorCode.USER_NOT_FOUND));
 		List<Subscription> subscriptions = subscriptionRepository.findByFollowerAndIsExistedIsTrue(member);

@@ -29,7 +29,7 @@ public class Member {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "memberId")
-	private int id;
+	private long id;
 
 	private String email;
 

@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class MemberDto {
-	private int userId;
+	private long userId;
 	private String profileImage;
 	private String nickname;
 

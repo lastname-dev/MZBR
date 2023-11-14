@@ -36,7 +36,11 @@ public enum ErrorCode {
 	AWS_S3_UPLOAD_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "A-001", "S3 업로드가 실패하였습니다."),
 
 	// Store
-	STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "S-001", "존재하지 않는 식당입니다.");
+	STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "S-001", "존재하지 않는 식당입니다."),
+	STORE_SEARCH_EXCEPTION(HttpStatus.BAD_REQUEST, "S-002", "식당 검색 중 오류가 발생하였습니다."),
+
+	// Video
+	VIDEO_NOT_FOUND(HttpStatus.NOT_FOUND, "V-001", "존재하지 않는 비디오입니다.");
 
 	ErrorCode(HttpStatus httpStatus, String errorCode, String message) {
 		this.httpStatus = httpStatus;

@@ -66,7 +66,7 @@ public class JwtService {
 	private final MemberRepository memberRepository;
 	private GrantedAuthoritiesMapper authoritiesMapper = new NullAuthoritiesMapper();
 
-	public String createAccessToken(int id) {
+	public String createAccessToken(long id) {
 		return JWT.create()
 			.withSubject(ACCESS_TOKEN_SUBJECT)
 			.withExpiresAt(new Date(System.currentTimeMillis() + ACCESS_EXPIRATION_TIME))
@@ -81,7 +81,7 @@ public class JwtService {
 			.sign(Algorithm.HMAC512(secretKey));
 	}
 
-	public void saveRefreshToken(String refreshToken, int id) {
+	public void saveRefreshToken(String refreshToken, long id) {
 		redisTemplate.opsForValue().set(id + "", refreshToken, REFRESH_EXPIRATION_TIME, TimeUnit.MILLISECONDS);
 	}
 
@@ -97,8 +97,8 @@ public class JwtService {
 			.map(token -> token.replace(PREFIX, ""));
 	}
 
-	public Optional<Integer> extractId(String accessToken) {
-		return Optional.ofNullable(JWT.decode(accessToken).getClaim("id").asInt());
+	public Optional<Long> extractId(String accessToken) {
+		return Optional.ofNullable(JWT.decode(accessToken).getClaim("id").asLong());
 	}
 
 	public boolean isTokenValid(String token) {
@@ -142,7 +142,7 @@ public class JwtService {
 		IOException {
 		String accessToken = extractAccessToken(request).orElseThrow(
 			() -> new AuthException(ErrorCode.ACCESS_TOKEN_NOT_EXIST));
-		Integer id = extractId(accessToken).orElseThrow(() -> new AuthException(ErrorCode.ACCESS_TOKEN_INVALID));
+		long id = extractId(accessToken).orElseThrow(() -> new AuthException(ErrorCode.ACCESS_TOKEN_INVALID));
 	
 		if (!refreshToken.equals(redisTemplate.opsForValue().get(id + ""))) {
 			throw new AuthException(ErrorCode.REFRESH_TOKEN_INVALID);
