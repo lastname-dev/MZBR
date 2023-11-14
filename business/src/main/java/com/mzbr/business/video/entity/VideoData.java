@@ -28,8 +28,8 @@ public class VideoData {
 	Integer star;
 	String description;
 	String thumbnailUrl;
-	String m3u8Url;
-
+	String masterUrl;
+	int views;
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "video_id")
 	Video videoEntity;

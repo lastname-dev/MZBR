@@ -22,6 +22,7 @@ public class VideoDto {
 	String writer;
 	int star;
 	String description;
+	int views;
 
 	public static VideoDto from(Video video) {
 		VideoData videoData = video.getVideoData();
@@ -32,6 +33,7 @@ public class VideoDto {
 			.writer(video.getMember().getNickname())
 			.star(videoData.getStar())
 			.description(videoData.getDescription())
+			.views(videoData.getViews())
 			.build();
 	}
 
