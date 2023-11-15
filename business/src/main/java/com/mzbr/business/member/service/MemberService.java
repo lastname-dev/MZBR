@@ -38,6 +38,13 @@ public class MemberService {
 		return member.isPresent();
 	}
 
+	public MemberDto getUserInfo(long userId) {
+		Member member = memberRepository.findById(userId)
+			.orElseThrow(() -> new BadRequestException(ErrorCode.USER_NOT_FOUND));
+		MemberDto memberDto = MemberDto.from(member);
+		return memberDto;
+	}
+
 	@Transactional
 	public void changeNickname(MemberNicknameChangeDto memberNicknameChangeDto) {
 		Member member = memberRepository.findById(memberNicknameChangeDto.getUserId())

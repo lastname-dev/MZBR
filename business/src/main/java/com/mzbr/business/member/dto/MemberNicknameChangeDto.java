@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @Builder
 public class MemberNicknameChangeDto {
-	private final long userId;
-	private final String nickname;
+	private long userId;
+	private String nickname;
 
 	public static MemberNicknameChangeDto of(int userId, String nickname) {
 		return MemberNicknameChangeDto.builder()
