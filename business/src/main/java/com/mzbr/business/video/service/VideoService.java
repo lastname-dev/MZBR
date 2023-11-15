@@ -39,24 +39,23 @@ public class VideoService {
 			.orElseThrow(() -> new BadRequestException(ErrorCode.VIDEO_NOT_FOUND));
 
 		if (!redisService.isView(videoViewDto)) {
-			addViewCount(videoViewDto.getMemberId(), videoViewDto.getVideoId());
+			redisService.checkView(videoViewDto);
 		}
 
 		return VideoInfoDto.from(video);
 	}
 
 	private void addViewCount(long memberId, long videoId) {
-
 	}
 
 	public List<VideoDto> getNearVideos(StoreSearchDto storeSearchDto) {
 		List<StoreDto> storeDtos = storeService.searchAroundStores(storeSearchDto);
 		// 랜덤으로 근처 영상 뿌리게 구현, 성능 상당히 떨어질 것으로 예상, 추후 변경 필요
 		List<VideoDto> videoDtos = new ArrayList<>();
-		for(StoreDto storeDto : storeDtos) {
+		for (StoreDto storeDto : storeDtos) {
 			Store store = storeRepository.findById(storeDto.getStoreId()).get();
 			List<Video> videos = store.getVideos();
-			for(Video video : videos){
+			for (Video video : videos) {
 				videoDtos.add(VideoDto.from(video));
 			}
 		}

@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 public class RedisService {
 	private final Long expiredDate = 86400L;
 	private final String VIDEO_PREFIX = "video";
-	private final RedisTemplate<String, Boolean> redisTemplate;
+	private final RedisTemplate<String, Long> redisTemplate;
 
 	public boolean isView(VideoViewDto videoViewDto) {
 		String key = generateKey(videoViewDto.getMemberId(), videoViewDto.getVideoId());
@@ -23,9 +23,12 @@ public class RedisService {
 
 	public void checkView(VideoViewDto videoViewDto) {
 		String key = generateKey(videoViewDto.getMemberId(), videoViewDto.getVideoId());
-		redisTemplate.opsForValue().set(key, true, expiredDate, TimeUnit.SECONDS);
-		if (Boolean.TRUE.equals(redisTemplate.hasKey(VIDEO_PREFIX + videoViewDto.getVideoId()))) {
-			
+		redisTemplate.opsForValue().set(key, 0L, expiredDate, TimeUnit.SECONDS);
+		Long views = redisTemplate.opsForValue().get(VIDEO_PREFIX + videoViewDto.getVideoId());
+		if (views != null) {
+			redisTemplate.opsForValue().set(VIDEO_PREFIX + videoViewDto.getVideoId(), views + 1);
+		} else {
+			redisTemplate.opsForValue().set(VIDEO_PREFIX + videoViewDto.getVideoId(), 1L);
 		}
 	}
 
