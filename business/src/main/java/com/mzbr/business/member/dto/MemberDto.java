@@ -32,6 +32,7 @@ public class MemberDto {
 	@Builder
 	public static class Response {
 		private long userId;
+
 		private String profileImage;
 		private String nickname;
 

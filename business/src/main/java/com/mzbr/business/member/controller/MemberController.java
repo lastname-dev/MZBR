@@ -36,6 +36,18 @@ import lombok.RequiredArgsConstructor;
 public class MemberController {
 	private final MemberService memberService;
 
+	@GetMapping("/me")
+	public ResponseEntity<MemberDto.Response> getMyInfo(@AuthenticationPrincipal UserDetails userDetails) {
+		MemberDto userInfo = memberService.getUserInfo(Integer.parseInt(userDetails.getUsername()));
+		return ResponseEntity.ok(MemberDto.Response.from(userInfo));
+	}
+
+	@GetMapping("/{userId}")
+	public ResponseEntity<MemberDto.Response> getOthersInfo(@PathVariable int userId) {
+		MemberDto userInfo = memberService.getUserInfo(userId);
+		return ResponseEntity.ok(MemberDto.Response.from(userInfo));
+	}
+
 	@PostMapping("/nickname/check")
 	@Operation(summary = "닉네임 중복 검사", description = "닉네임을 중복 검사한다.", responses = {
 		@ApiResponse(responseCode = "200", description = "성공"),
@@ -79,7 +91,8 @@ public class MemberController {
 	public ResponseEntity<MemberSubscribeListDto.Response> getSubscribeList(@PathVariable int userId) {
 
 		List<MemberDto> subscribeList = memberService.getSubscribeList(userId);
-		
+
 		return ResponseEntity.ok(MemberSubscribeListDto.Response.from(subscribeList));
 	}
+
 }
