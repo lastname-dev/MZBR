@@ -15,6 +15,8 @@ public class MemberDto {
 	private long userId;
 	private String profileImage;
 	private String nickname;
+	private int subscribeCount;
+	private int postCount;
 
 	public static MemberDto from(Member member) {
 		return MemberDto.builder()
@@ -23,4 +25,26 @@ public class MemberDto {
 			.profileImage(member.getProfileImage())
 			.build();
 	}
+
+	@Getter
+	@NoArgsConstructor
+	@AllArgsConstructor
+	@Builder
+	public static class Response {
+		private int userId;
+		private String profileImage;
+		private String nickname;
+
+		private int subscribeCount;
+		private int postCount;
+
+		public static Response from(MemberDto member) {
+			return Response.builder()
+				.userId(member.getUserId())
+				.nickname(member.getNickname())
+				.profileImage(member.getProfileImage())
+				.build();
+		}
+	}
+
 }
