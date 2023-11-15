@@ -38,7 +38,8 @@ public class MemberService {
 		return member.isPresent();
 	}
 
-	public MemberDto getUserInfo(int userId) {
+	public MemberDto getUserInfo(long userId) {
+
 		Member member = memberRepository.findById(userId)
 			.orElseThrow(() -> new BadRequestException(ErrorCode.USER_NOT_FOUND));
 		MemberDto memberDto = MemberDto.from(member);

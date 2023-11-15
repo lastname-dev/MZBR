@@ -31,7 +31,8 @@ public class MemberDto {
 	@AllArgsConstructor
 	@Builder
 	public static class Response {
-		private int userId;
+		private long userId;
+
 		private String profileImage;
 		private String nickname;
 
