@@ -13,14 +13,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class VideoInfoDto {
-	private Long id;
-	private String videoUuid;
-	private String thumbnailUrl;
-	private String masterUrl;
-	private String writer;
-	private int star;
-	private String description;
-	private int views;
+	Long id;
+	String videoUuid;
+	String thumbnailUrl;
+	String masterUrl;
+	String storeName;
+	String writer;
+	int star;
+	String description;
+	int views;
 
 	public static VideoInfoDto from(Video video) {
 		VideoData videoData = video.getVideoData();
@@ -29,11 +30,40 @@ public class VideoInfoDto {
 			.videoUuid(video.getVideoUuid())
 			.thumbnailUrl(video.getThumbnailUrl())
 			.masterUrl(videoData.getMasterUrl())
+			.storeName(video.getStore().getName())
 			.writer(video.getMember().getNickname())
 			.star(videoData.getStar())
 			.description(videoData.getDescription())
 			.views(videoData.getViews())
 			.build();
+	}
+	@NoArgsConstructor
+	@AllArgsConstructor
+	@Builder
+	@Getter
+	public static class Response {
+		Long id;
+		String videoUuid;
+		String thumbnailUrl;
+		String masterUrl;
+		String storeName;
+		String writer;
+		int star;
+		String description;
+		int views;
+		public static Response from(VideoInfoDto video) {
+			return Response.builder()
+				.id(video.getId())
+				.videoUuid(video.getVideoUuid())
+				.thumbnailUrl(video.getThumbnailUrl())
+				.masterUrl(video.getMasterUrl())
+				.storeName(video.getStoreName())
+				.writer(video.getWriter())
+				.star(video.getStar())
+				.description(video.getDescription())
+				.views(video.getViews())
+				.build();
+		}
 	}
 
 }

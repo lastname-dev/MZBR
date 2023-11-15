@@ -19,6 +19,8 @@ public class VideoDto {
 	Long id;
 	String videoUuid;
 	String thumbnailUrl;
+	String masterUrl;
+	String storeName;
 	String writer;
 	int star;
 	String description;
@@ -30,6 +32,8 @@ public class VideoDto {
 			.id(video.getId())
 			.videoUuid(video.getVideoUuid())
 			.thumbnailUrl(video.getThumbnailUrl())
+			.masterUrl(videoData.getMasterUrl())
+			.storeName(video.getStore().getName())
 			.writer(video.getMember().getNickname())
 			.star(videoData.getStar())
 			.description(videoData.getDescription())
@@ -42,11 +46,11 @@ public class VideoDto {
 	@AllArgsConstructor
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	public static class Response {
-		List<VideoDto> videoDtos;
+		List<VideoDto> videos;
 
 		public static Response from(List<VideoDto> videoDtos) {
 			return Response.builder()
-				.videoDtos(videoDtos)
+				.videos(videoDtos)
 				.build();
 		}
 	}
