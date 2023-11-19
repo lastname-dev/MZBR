@@ -17,11 +17,32 @@ public class MemberDto {
 	private String nickname;
 	private int subscribeCount;
 	private int postCount;
+	private boolean isFollowing;
 
 	public static MemberDto from(Member member) {
 		return MemberDto.builder()
 			.userId(member.getId())
 			.nickname(member.getNickname())
+			.profileImage(member.getProfileImage())
+			.build();
+	}
+
+	public static MemberDto of(Member member, long postCount, long subscribeCount) {
+		return MemberDto.builder()
+			.userId(member.getId())
+			.nickname(member.getNickname())
+			.postCount((int)postCount)
+			.subscribeCount((int)subscribeCount)
+			.profileImage(member.getProfileImage())
+			.build();
+	}
+
+	public static MemberDto of(Member member, long postCount, long subscribeCount, boolean isFollowing) {
+		return MemberDto.builder()
+			.userId(member.getId())
+			.nickname(member.getNickname())
+			.postCount((int)postCount)
+			.subscribeCount((int)subscribeCount)
 			.profileImage(member.getProfileImage())
 			.build();
 	}

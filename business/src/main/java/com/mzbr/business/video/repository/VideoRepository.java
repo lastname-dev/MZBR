@@ -15,4 +15,6 @@ public interface VideoRepository extends JpaRepository<Video, Long> {
 
 	List<Video> findByMember(Member member);
 
+	Long countByMember(Member member);
+
 }
