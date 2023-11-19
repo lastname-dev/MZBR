@@ -80,7 +80,7 @@ public class MemberController {
 	}
 
 	@PostMapping("/subscribe/{userId}")
-	public ResponseEntity<Void> subscribe(@PathVariable int userId, @AuthenticationPrincipal UserDetails userDetails) {
+	public ResponseEntity<Void> subscribe(@PathVariable long userId, @AuthenticationPrincipal UserDetails userDetails) {
 
 		memberService.subscribe(MemberSubscribeDto.of(userId, Integer.parseInt(userDetails.getUsername())));
 
@@ -88,7 +88,7 @@ public class MemberController {
 	}
 
 	@GetMapping("/subscriber/{userId}")
-	public ResponseEntity<MemberSubscribeListDto.Response> getSubscribeList(@PathVariable int userId) {
+	public ResponseEntity<MemberSubscribeListDto.Response> getSubscribeList(@PathVariable long userId) {
 
 		List<MemberDto> subscribeList = memberService.getSubscribeList(userId);
 

@@ -16,12 +16,10 @@ import com.mzbr.business.global.s3.S3UploadService;
 import com.mzbr.business.member.dto.MemberDto;
 import com.mzbr.business.member.dto.MemberNicknameChangeDto;
 import com.mzbr.business.member.dto.MemberSubscribeDto;
-import com.mzbr.business.member.dto.MemberSubscribeListDto;
 import com.mzbr.business.member.entity.Member;
 import com.mzbr.business.member.entity.Subscription;
 import com.mzbr.business.member.repository.MemberRepository;
 import com.mzbr.business.member.repository.SubscriptionRepository;
-import com.mzbr.business.video.entity.Video;
 import com.mzbr.business.video.repository.VideoRepository;
 
 import lombok.RequiredArgsConstructor;
