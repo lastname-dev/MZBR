@@ -74,7 +74,7 @@ public class MemberController {
 	public ResponseEntity<Void> changeProfileImage(@RequestParam("profileImage") MultipartFile image,
 		@AuthenticationPrincipal UserDetails userDetails) {
 
-		memberService.changeProfileImage(image, Integer.parseInt(userDetails.getUsername()));
+		memberService.changeProfileImage(image, Long.parseLong(userDetails.getUsername()));
 
 		return ResponseEntity.ok().build();
 	}
