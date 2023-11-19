@@ -70,7 +70,10 @@ public class VideoService {
 		Store store = storeRepository.findById(storeId)
 			.orElseThrow(() -> new BadRequestException(ErrorCode.STORE_NOT_FOUND));
 		List<Video> videos = videoRepository.findByStore(store);
-		List<VideoDto> videoDtos = videos.stream().map(VideoDto::from).collect(Collectors.toList());
+		List<VideoDto> videoDtos = videos.stream()
+			.filter(video -> video.getVideoData() != null)
+			.map(VideoDto::from)
+			.collect(Collectors.toList());
 		return videoDtos;
 	}
 
@@ -78,7 +81,10 @@ public class VideoService {
 		Member member = memberRepository.findById(userId)
 			.orElseThrow(() -> new BadRequestException(ErrorCode.USER_NOT_FOUND));
 		List<Video> videos = videoRepository.findByMember(member);
-		List<VideoDto> videoDtos = videos.stream().map(VideoDto::from).collect(Collectors.toList());
+		List<VideoDto> videoDtos = videos.stream()
+			.filter(video -> video.getVideoData() != null)
+			.map(VideoDto::from)
+			.collect(Collectors.toList());
 		return videoDtos;
 	}
 }
