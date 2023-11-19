@@ -53,4 +53,10 @@ public class VideoController {
 		List<VideoDto> storeVideos = videoService.getStoreVideos(storeId);
 		return ResponseEntity.ok(VideoDto.Response.from(storeVideos));
 	}
+
+	@GetMapping("/users/{userId}")
+	public ResponseEntity<VideoDto.Response> getUserVideos(@PathVariable long userId) {
+		List<VideoDto> userVideos = videoService.getUserVideos(userId);
+		return ResponseEntity.ok(VideoDto.Response.from(userVideos));
+	}
 }
