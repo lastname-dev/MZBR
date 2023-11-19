@@ -38,13 +38,14 @@ public class MemberController {
 
 	@GetMapping("/me")
 	public ResponseEntity<MemberDto.Response> getMyInfo(@AuthenticationPrincipal UserDetails userDetails) {
-		MemberDto userInfo = memberService.getUserInfo(Integer.parseInt(userDetails.getUsername()));
+		MemberDto userInfo = memberService.getMyInfo(Long.parseLong(userDetails.getUsername()));
 		return ResponseEntity.ok(MemberDto.Response.from(userInfo));
 	}
 
 	@GetMapping("/{userId}")
-	public ResponseEntity<MemberDto.Response> getOthersInfo(@PathVariable int userId) {
-		MemberDto userInfo = memberService.getUserInfo(userId);
+	public ResponseEntity<MemberDto.Response> getOthersInfo(@PathVariable long userId,
+		@AuthenticationPrincipal UserDetails userDetails) {
+		MemberDto userInfo = memberService.getOtherInfo(Long.parseLong(userDetails.getUsername()), userId);
 		return ResponseEntity.ok(MemberDto.Response.from(userInfo));
 	}
 

@@ -40,13 +40,25 @@ public class MemberService {
 		return member.isPresent();
 	}
 
-	public MemberDto getUserInfo(long userId) {
+	public MemberDto getMyInfo(long userId) {
 
 		Member member = memberRepository.findById(userId)
 			.orElseThrow(() -> new BadRequestException(ErrorCode.USER_NOT_FOUND));
 		Long videoCount = videoRepository.countByMember(member);
 		Long subscriptionCount = subscriptionRepository.countByFollower(member);
 		MemberDto memberDto = MemberDto.of(member, videoCount, subscriptionCount);
+		return memberDto;
+	}
+
+	public MemberDto getOtherInfo(long myId, long userId) {
+		Member me = memberRepository.findById(myId)
+			.orElseThrow(() -> new BadRequestException(ErrorCode.USER_NOT_FOUND));
+		Member member = memberRepository.findById(userId)
+			.orElseThrow(() -> new BadRequestException(ErrorCode.USER_NOT_FOUND));
+		Long videoCount = videoRepository.countByMember(member);
+		Long subscriptionCount = subscriptionRepository.countByFollower(member);
+		Optional<Subscription> byFolloweeAndFollower = subscriptionRepository.findByFolloweeAndFollower(member, me);
+		MemberDto memberDto = MemberDto.of(member, videoCount, subscriptionCount, byFolloweeAndFollower.isPresent());
 		return memberDto;
 	}
 
