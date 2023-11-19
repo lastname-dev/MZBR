@@ -26,6 +26,16 @@ public class MemberDto {
 			.build();
 	}
 
+	public static MemberDto of(Member member, long postCount, long subscribeCount) {
+		return MemberDto.builder()
+			.userId(member.getId())
+			.nickname(member.getNickname())
+			.postCount((int)postCount)
+			.subscribeCount((int)subscribeCount)
+			.profileImage(member.getProfileImage())
+			.build();
+	}
+
 	@Getter
 	@NoArgsConstructor
 	@AllArgsConstructor

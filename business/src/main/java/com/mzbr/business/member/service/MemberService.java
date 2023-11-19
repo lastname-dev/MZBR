@@ -21,6 +21,8 @@ import com.mzbr.business.member.entity.Member;
 import com.mzbr.business.member.entity.Subscription;
 import com.mzbr.business.member.repository.MemberRepository;
 import com.mzbr.business.member.repository.SubscriptionRepository;
+import com.mzbr.business.video.entity.Video;
+import com.mzbr.business.video.repository.VideoRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MemberService {
 
 	private final MemberRepository memberRepository;
+	private final VideoRepository videoRepository;
 	private final SubscriptionRepository subscriptionRepository;
 	private final S3UploadService s3UploadService;
 
@@ -43,7 +46,9 @@ public class MemberService {
 
 		Member member = memberRepository.findById(userId)
 			.orElseThrow(() -> new BadRequestException(ErrorCode.USER_NOT_FOUND));
-		MemberDto memberDto = MemberDto.from(member);
+		Long videoCount = videoRepository.countByMember(member);
+		Long subscriptionCount = subscriptionRepository.countByFollower(member);
+		MemberDto memberDto = MemberDto.of(member, videoCount, subscriptionCount);
 		return memberDto;
 	}
 
