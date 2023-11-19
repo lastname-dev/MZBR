@@ -20,6 +20,7 @@ import com.mzbr.business.member.entity.Member;
 import com.mzbr.business.member.entity.Subscription;
 import com.mzbr.business.member.repository.MemberRepository;
 import com.mzbr.business.member.repository.SubscriptionRepository;
+import com.mzbr.business.video.entity.Video;
 import com.mzbr.business.video.repository.VideoRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -41,11 +42,12 @@ public class MemberService {
 	}
 
 	public MemberDto getMyInfo(long userId) {
-
 		Member member = memberRepository.findById(userId)
 			.orElseThrow(() -> new BadRequestException(ErrorCode.USER_NOT_FOUND));
-		Long videoCount = videoRepository.countByMember(member);
-		Long subscriptionCount = subscriptionRepository.countByFollower(member);
+		List<Video> videos = videoRepository.findByMember(member);
+		Long videoCount = (long)videos.size();
+		List<Subscription> following = subscriptionRepository.findByFollower(member);
+		Long subscriptionCount = (long)following.size();
 		MemberDto memberDto = MemberDto.of(member, videoCount, subscriptionCount);
 		return memberDto;
 	}
@@ -55,8 +57,10 @@ public class MemberService {
 			.orElseThrow(() -> new BadRequestException(ErrorCode.USER_NOT_FOUND));
 		Member member = memberRepository.findById(userId)
 			.orElseThrow(() -> new BadRequestException(ErrorCode.USER_NOT_FOUND));
-		Long videoCount = videoRepository.countByMember(member);
-		Long subscriptionCount = subscriptionRepository.countByFollower(member);
+		List<Video> videos = videoRepository.findByMember(member);
+		Long videoCount = (long)videos.size();
+		List<Subscription> following = subscriptionRepository.findByFollower(member);
+		Long subscriptionCount = (long)following.size();
 		Optional<Subscription> byFolloweeAndFollower = subscriptionRepository.findByFolloweeAndFollower(member, me);
 		MemberDto memberDto = MemberDto.of(member, videoCount, subscriptionCount, byFolloweeAndFollower.isPresent());
 		return memberDto;

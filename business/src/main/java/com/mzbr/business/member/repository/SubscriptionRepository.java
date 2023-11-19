@@ -14,5 +14,7 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Inte
 
 	Long countByFollower(Member follower);
 
+	List<Subscription> findByFollower(Member follower);
+
 	List<Subscription> findByFollowerAndIsExistedIsTrue(Member follower);
 }
