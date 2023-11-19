@@ -21,6 +21,7 @@ public class VideoDto {
 	String thumbnailUrl;
 	String masterUrl;
 	String storeName;
+	long writerId;
 	String writer;
 	int star;
 	String description;
@@ -31,9 +32,10 @@ public class VideoDto {
 		return VideoDto.builder()
 			.id(video.getId())
 			.videoUuid(video.getVideoUuid())
-			.thumbnailUrl(video.getThumbnailUrl())
+			.thumbnailUrl(videoData.getThumbnailUrl())
 			.masterUrl(videoData.getMasterUrl())
 			.storeName(video.getStore().getName())
+			.writerId(video.getMember().getId())
 			.writer(video.getMember().getNickname())
 			.star(videoData.getStar())
 			.description(videoData.getDescription())
